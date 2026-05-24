@@ -195,41 +195,36 @@ if st.button('Predecir cluster'):
 
         st.subheader('Visualización de clusters')
 
-        SKLEARN_COLORS = [
-            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
-            '#9467bd', '#8c564b', '#e377c2',
-        ]
-
-        n_clusters  = kmeans.n_clusters
-        colors      = SKLEARN_COLORS[:n_clusters]
-        labels      = kmeans.labels_
+        palette = ['#4a90c4', '#d85a30', '#3b9e75', '#e8a020', '#9b59b6', '#e74c3c', '#1abc9c']
+        n_clusters = kmeans.n_clusters
+        colors = palette[:n_clusters]
+        labels = kmeans.labels_
 
         centroids_pca = np.array([
-            X_pca[labels == i].mean(axis=0)
-            for i in range(n_clusters)
+        X_pca[labels == i].mean(axis=0)
+        for i in range(n_clusters)
         ])
 
-        fig, ax = plt.subplots(figsize=(8, 5))
-        fig.patch.set_facecolor('#FDFAF5')
-        ax.set_facecolor('#FDFAF5')
+        fig, ax = plt.subplots(figsize=(10, 7))
 
-        ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.4, color='#C4B49A')
+        ax.grid(linestyle='--', linewidth=0.7, alpha=0.7, color='gray')
         ax.set_axisbelow(True)
 
         for i in range(n_clusters):
             mask = labels == i
             ax.scatter(
                 X_pca[mask, 0], X_pca[mask, 1],
-                c=colors[i], alpha=0.35, s=18,
-                edgecolors='none', label=f'Cluster {i}'
+                c=colors[i], alpha=0.7, s=40,
+                edgecolors='white', linewidths=0.3,
+                label=f'Cluster {i}'
             )
 
         ax.scatter(
             centroids_pca[:, 0], centroids_pca[:, 1],
             s=220, marker='o',
             c=[colors[i] for i in range(n_clusters)],
-            edgecolors='#3B2A1A', linewidths=1.8,
-            zorder=5, label='Centroides'
+            edgecolors='#2c2c2c', linewidths=1.8,
+            zorder=5
         )
 
         for i, (cx, cy) in enumerate(centroids_pca):
@@ -242,28 +237,24 @@ if st.button('Predecir cluster'):
 
         ax.scatter(
             new_pca[:, 0], new_pca[:, 1],
-            s=280, marker='*', color='#C4714A',
+            s=280, marker='*', color='#d85a30',
             edgecolors='white', linewidths=0.8,
             zorder=7, label='Nuevo frijol'
         )
 
-        ax.set_title(
-            'K-Means Clustering — Proyección PCA (2 componentes)',
-            fontsize=13, fontweight='bold', pad=14, color='#3B2A1A'
-        )
-        ax.set_xlabel('Componente principal 1', fontsize=11, color='#5A4A38', labelpad=8)
-        ax.set_ylabel('Componente principal 2', fontsize=11, color='#5A4A38', labelpad=8)
+        ax.set_title('Clusters de frijoles', fontsize=13, pad=12)
+        ax.set_xlabel('Componente Principal 1', fontsize=11)
+        ax.set_ylabel('Componente Principal 2', fontsize=11)
 
-        ax.legend(
-            loc='upper right', fontsize=9,
-            framealpha=0.9, edgecolor='#E0D5C5', fancybox=False
-        )
+        legend = ax.legend(loc='upper right', fontsize=9, framealpha=0.9)
+        legend.set_title('Cluster', prop={'size': 10})
+        for text in legend.get_texts():
+            text.set_fontsize(9)
 
         for spine in ax.spines.values():
-            spine.set_edgecolor('#E0D5C5')
+            spine.set_edgecolor('#4a90c4')
             spine.set_linewidth(0.8)
 
-        ax.tick_params(colors='#5A4A38', labelsize=9)
         plt.tight_layout()
         st.pyplot(fig)
 
