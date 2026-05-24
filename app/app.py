@@ -54,7 +54,7 @@ scaler = joblib.load('models/scaler.pkl')
 # CARGAR DATASET
 # =========================
 
-df = pd.read_csv('data/Dry_Bean_Dataset_clean.csv')
+df = pd.read_csv('data/processed/Dry_Bean_Dataset_clean.csv')
 df.columns = df.columns.str.strip()
 
 # =========================
