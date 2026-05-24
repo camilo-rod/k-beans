@@ -5,7 +5,9 @@ from matplotlib.colors import ListedColormap
 from pathlib import Path
 from sklearn.decomposition import PCA
 import re
-
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.preprocessing import load_data, get_features
 from src.predict import load_model, load_scaler, predict_cluster
 
