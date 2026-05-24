@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 import joblib
 import matplotlib.pyplot as plt
-import seaborn as sns
-
+import matplotlib.patches as mpatches
+from matplotlib.colors import ListedColormap
+from pathlib import Path
 from sklearn.decomposition import PCA
 
 # =========================
@@ -18,29 +19,43 @@ st.set_page_config(
 )
 
 # =========================
-# TÍTULO
+# INYECTAR CSS PERSONALIZADO
 # =========================
 
-st.title('Sistema de Clustering de Frijoles con K-Means')
+css_path = Path(__file__).parent / 'static' / 'style.css'
+with open(css_path, 'r', encoding='utf-8') as f:
+    css_content = f.read()
 
-st.markdown('''
-Esta aplicación utiliza Machine Learning no supervisado
-para agrupar frijoles según características físicas.
-''')
+st.markdown(f'<style>{css_content}</style>', unsafe_allow_html=True)
 
 # =========================
-# CARGAR MODELOS
+# INYECTAR HEADER HTML
 # =========================
 
-kmeans = joblib.load('../models/kmeans_model.pkl')
+header_path = Path(__file__).parent / 'templates' / 'header.html'
+with open(header_path, 'r', encoding='utf-8') as f:
+    raw_html = f.read()
 
-scaler = joblib.load('../models/scaler.pkl')
+# Extraer solo el contenido dentro del <body>
+import re
+body_match = re.search(r'<body>(.*?)</body>', raw_html, re.DOTALL)
+header_html = body_match.group(1).strip() if body_match else raw_html
+
+st.markdown(header_html, unsafe_allow_html=True)
+
+# =========================
+# CARGAR MODELO Y SCALER
+# =========================
+
+kmeans = joblib.load('models/kmeans_model.pkl')
+scaler = joblib.load('models/scaler.pkl')
 
 # =========================
 # CARGAR DATASET
 # =========================
 
-df = pd.read_csv('../data/raw/dry_bean_dataset.csv')
+df = pd.read_csv('data/Dry_Bean_Dataset_clean.csv')
+df.columns = df.columns.str.strip()
 
 # =========================
 # FEATURES
@@ -54,7 +69,21 @@ features = [
     'Compactness'
 ]
 
-X = df[features]
+# =========================
+# VALIDAR FEATURES
+# =========================
+
+missing = [col for col in features if col not in df.columns]
+
+if len(missing) > 0:
+    st.error(f'Columnas faltantes: {missing}')
+    st.stop()
+
+# =========================
+# DATOS PARA EL MODELO
+# =========================
+
+X = df[features].copy()
 
 # =========================
 # ESCALAR DATOS
@@ -67,130 +96,219 @@ X_scaled = scaler.transform(X)
 # =========================
 
 pca = PCA(n_components=2)
-
 X_pca = pca.fit_transform(X_scaled)
 
 # =========================
-# SIDEBAR
+# INPUTS
 # =========================
 
-st.sidebar.header('Ingresar Datos del Frijol')
+st.subheader('Ingresar datos del frijol')
 
-area = st.sidebar.number_input('Area', value=25000.0)
+st.markdown('''
+Ingresa los valores dentro de los rangos permitidos:
 
-perimeter = st.sidebar.number_input('Perimeter', value=700.0)
+- **Area**: 10 000 – 80 000
+- **Perimeter**: 400 – 1 200
+- **MajorAxisLength**: 150 – 500
+- **MinorAxisLength**: 80 – 250
+- **Compactness**: 0.60 – 0.95
+''')
 
-major_axis = st.sidebar.number_input('MajorAxisLength', value=250.0)
+col1, col2 = st.columns(2)
 
-minor_axis = st.sidebar.number_input('MinorAxisLength', value=150.0)
+with col1:
+    area = st.number_input(
+        'Area',
+        min_value=10000.0, max_value=80000.0,
+        value=42000.0, step=100.0
+    )
+    perimeter = st.number_input(
+        'Perimeter',
+        min_value=400.0, max_value=1200.0,
+        value=700.0, step=10.0
+    )
+    major_axis = st.number_input(
+        'MajorAxisLength',
+        min_value=150.0, max_value=500.0,
+        value=250.0, step=5.0
+    )
 
-aspect_ratio = st.sidebar.number_input('AspectRation', value=1.5)
+with col2:
+    minor_axis = st.number_input(
+        'MinorAxisLength',
+        min_value=80.0, max_value=250.0,
+        value=150.0, step=5.0
+    )
+    compactness = st.number_input(
+        'Compactness',
+        min_value=0.60, max_value=0.95,
+        value=0.80, step=0.01,
+        format="%.2f"
+    )
 
-eccentricity = st.sidebar.number_input('Eccentricity', value=0.7)
+# =========================
+# VALIDACIÓN
+# =========================
 
-convex_area = st.sidebar.number_input('ConvexArea', value=26000.0)
+valid = True
 
-equiv_diameter = st.sidebar.number_input('EquivDiameter', value=190.0)
+if area < 10000 or area > 80000:
+    st.error('Digite un valor válido para Area.')
+    valid = False
 
-extent = st.sidebar.number_input('Extent', value=0.75)
+if perimeter < 400 or perimeter > 1200:
+    st.error('Digite un valor válido para Perimeter.')
+    valid = False
 
-compactness = st.sidebar.number_input('Compactness', value=0.8)
+if major_axis < 150 or major_axis > 500:
+    st.error('Digite un valor válido para MajorAxisLength.')
+    valid = False
+
+if minor_axis < 80 or minor_axis > 250:
+    st.error('Digite un valor válido para MinorAxisLength.')
+    valid = False
+
+if compactness < 0.60 or compactness > 0.95:
+    st.error('Digite un valor válido para Compactness.')
+    valid = False
 
 # =========================
 # NUEVO REGISTRO
 # =========================
 
 new_data = pd.DataFrame({
-    'Area': [area],
-    'Perimeter': [perimeter],
-    'MajorAxisLength': [major_axis],
-    'MinorAxisLength': [minor_axis],
-    'AspectRation': [aspect_ratio],
-    'Eccentricity': [eccentricity],
-    'ConvexArea': [convex_area],
-    'EquivDiameter': [equiv_diameter],
-    'Extent': [extent],
-    'Compactness': [compactness]
+    'Area':           [area],
+    'Perimeter':      [perimeter],
+    'MajorAxisLength':[major_axis],
+    'MinorAxisLength':[minor_axis],
+    'Compactness':    [compactness]
 })
 
 # =========================
 # BOTÓN DE PREDICCIÓN
 # =========================
 
-if st.sidebar.button('Predecir Cluster'):
+if st.button('Predecir cluster'):
 
-    # Escalar
-    new_scaled = scaler.transform(new_data)
+    if valid:
 
-    # Predicción
-    prediction = kmeans.predict(new_scaled)
+        # Escalar datos
+        new_scaled = scaler.transform(new_data)
 
-    # PCA del nuevo punto
-    new_pca = pca.transform(new_scaled)
+        # Predicción
+        prediction = kmeans.predict(new_scaled)
 
-    # =========================
-    # RESULTADO
-    # =========================
+        # PCA nuevo punto
+        new_pca = pca.transform(new_scaled)
 
-    st.subheader('Resultado de la Predicción')
+        # =========================
+        # RESULTADO
+        # =========================
 
-    st.success(f'Cluster Predicho: {prediction[0]}')
+        st.subheader('Resultado de la predicción')
+        st.success(f'  Cluster predicho: **{prediction[0]}**')
 
-    # =========================
-    # INTERPRETACIÓN
-    # =========================
+        # =========================
+        # INTERPRETACIÓN
+        # =========================
 
-    interpretations = {
-        0: 'Frijoles grandes y compactos',
-        1: 'Frijoles pequeños y alargados',
-        2: 'Frijoles medianos con forma uniforme',
-        3: 'Frijoles con geometría irregular',
-        4: 'Frijoles densos y redondos',
-        5: 'Grupo especializado de frijoles'
-    }
+        interpretations = {
+            0: 'Frijoles grandes y compactos',
+            1: 'Frijoles pequeños y alargados',
+            2: 'Frijoles medianos y uniformes',
+            3: 'Frijoles con geometría irregular',
+            4: 'Frijoles densos y redondos',
+            5: 'Grupo especializado de frijoles',
+            6: 'Frijoles con características mixtas'
+        }
 
-    if prediction[0] in interpretations:
+        if prediction[0] in interpretations:
+            st.info(f'  {interpretations[prediction[0]]}')
 
-        st.info(interpretations[prediction[0]])
+        # =========================
+        # VISUALIZACIÓN
+        # =========================
 
-    # =========================
-    # VISUALIZACIÓN PCA
-    # =========================
+        st.subheader('Visualización de clusters')
 
-    st.subheader('Visualización de Clusters')
+        SKLEARN_COLORS = [
+            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
+            '#9467bd', '#8c564b', '#e377c2',
+        ]
 
-    fig, ax = plt.subplots(figsize=(10,7))
+        n_clusters  = kmeans.n_clusters
+        colors      = SKLEARN_COLORS[:n_clusters]
+        cmap        = ListedColormap(colors)
+        labels      = kmeans.labels_
 
-    scatter = ax.scatter(
-        X_pca[:,0],
-        X_pca[:,1],
-        c=kmeans.labels_,
-        alpha=0.5
-    )
+        centroids_pca = np.array([
+            X_pca[labels == i].mean(axis=0)
+            for i in range(n_clusters)
+        ])
 
-    # Nuevo punto
-    ax.scatter(
-        new_pca[:,0],
-        new_pca[:,1],
-        s=300,
-        marker='X'
-    )
+        fig, ax = plt.subplots(figsize=(8, 5))
+        fig.patch.set_facecolor('#FDFAF5')
+        ax.set_facecolor('#FDFAF5')
 
-    ax.set_title('Clusters con PCA')
+        ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.4, color='#C4B49A')
+        ax.set_axisbelow(True)
 
-    ax.set_xlabel('PCA 1')
-    ax.set_ylabel('PCA 2')
+        for i in range(n_clusters):
+            mask = labels == i
+            ax.scatter(
+                X_pca[mask, 0], X_pca[mask, 1],
+                c=colors[i], alpha=0.35, s=18,
+                edgecolors='none', label=f'Cluster {i}'
+            )
 
-    st.pyplot(fig)
+        ax.scatter(
+            centroids_pca[:, 0], centroids_pca[:, 1],
+            s=220, marker='o',
+            c=[colors[i] for i in range(n_clusters)],
+            edgecolors='#3B2A1A', linewidths=1.8,
+            zorder=5, label='Centroides'
+        )
+
+        for i, (cx, cy) in enumerate(centroids_pca):
+            ax.text(
+                cx, cy, str(i),
+                fontsize=9, fontweight='bold',
+                ha='center', va='center',
+                color='white', zorder=6
+            )
+
+        ax.scatter(
+            new_pca[:, 0], new_pca[:, 1],
+            s=280, marker='*', color='#C4714A',
+            edgecolors='white', linewidths=0.8,
+            zorder=7, label='Nuevo frijol'
+        )
+
+        ax.set_title(
+            'K-Means Clustering — Proyección PCA (2 componentes)',
+            fontsize=13, fontweight='bold', pad=14, color='#3B2A1A'
+        )
+        ax.set_xlabel('Componente principal 1', fontsize=11, color='#5A4A38', labelpad=8)
+        ax.set_ylabel('Componente principal 2', fontsize=11, color='#5A4A38', labelpad=8)
+
+        ax.legend(
+            loc='upper right', fontsize=9,
+            framealpha=0.9, edgecolor='#E0D5C5', fancybox=False
+        )
+
+        for spine in ax.spines.values():
+            spine.set_edgecolor('#E0D5C5')
+            spine.set_linewidth(0.8)
+
+        ax.tick_params(colors='#5A4A38', labelsize=9)
+        plt.tight_layout()
+        st.pyplot(fig)
 
 # =========================
 # INFORMACIÓN DEL MODELO
 # =========================
 
-st.subheader('Información del Modelo')
-
-st.write(f'Número de clusters detectados: {kmeans.n_clusters}')
-
-st.write('Modelo utilizado: K-Means Clustering')
-
-st.write('Preprocesamiento: StandardScaler')
+st.subheader('Información del modelo')
+st.write(f'**Número de clusters:** {kmeans.n_clusters}')
+st.write('**Modelo:** K-Means Clustering')
+st.write('**Preprocesamiento:** StandardScaler')
