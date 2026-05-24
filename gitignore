@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Modelos (opcional, son pesados)
+# models/*.pkl
+
+# Data (opcional, si el CSV es pesado)
+# data/raw/
+# data/processed/
+
+# VS Code
+.vscode/
+
+# Streamlit
+.streamlit/secrets.toml
