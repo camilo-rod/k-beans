@@ -11,9 +11,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.preprocessing import load_data, get_features
 from src.predict import load_model, load_scaler, predict_cluster
 
-# =========================
+
 # CONFIGURACIÓN GENERAL
-# =========================
+
 
 st.set_page_config(
     page_title='K-Beans',
@@ -21,9 +21,9 @@ st.set_page_config(
     layout='wide'
 )
 
-# =========================
+
 # INYECTAR CSS PERSONALIZADO
-# =========================
+
 
 css_path = Path(__file__).parent / 'static' / 'style.css'
 with open(css_path, 'r', encoding='utf-8') as f:
@@ -31,9 +31,9 @@ with open(css_path, 'r', encoding='utf-8') as f:
 
 st.markdown(f'<style>{css_content}</style>', unsafe_allow_html=True)
 
-# =========================
+
 # INYECTAR HEADER HTML
-# =========================
+
 
 header_path = Path(__file__).parent / 'templates' / 'header.html'
 with open(header_path, 'r', encoding='utf-8') as f:
@@ -44,9 +44,9 @@ header_html = body_match.group(1).strip() if body_match else raw_html
 
 st.markdown(header_html, unsafe_allow_html=True)
 
-# =========================
+
 # CARGAR MODELO, SCALER Y DATOS
-# =========================
+
 
 kmeans = load_model('models/kmeans_model.pkl')
 scaler = load_scaler('models/scaler.pkl')
@@ -54,9 +54,9 @@ scaler = load_scaler('models/scaler.pkl')
 df = load_data('data/processed/Dry_Bean_Dataset_clean.csv')
 features = get_features()
 
-# =========================
+
 # VALIDAR FEATURES
-# =========================
+
 
 missing = [col for col in features if col not in df.columns]
 
@@ -64,9 +64,9 @@ if len(missing) > 0:
     st.error(f'Columnas faltantes: {missing}')
     st.stop()
 
-# =========================
+
 # DATOS PARA VISUALIZACIÓN
-# =========================
+
 
 X = df[features].copy()
 X_scaled = scaler.transform(X)
@@ -74,9 +74,9 @@ X_scaled = scaler.transform(X)
 pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X_scaled)
 
-# =========================
+
 # INPUTS
-# =========================
+
 
 st.subheader('Ingresar datos del frijol')
 
@@ -122,9 +122,9 @@ with col2:
         format="%.2f"
     )
 
-# =========================
+
 # VALIDACIÓN
-# =========================
+
 
 valid = True
 
@@ -148,9 +148,9 @@ if compactness < 0.60 or compactness > 0.95:
     st.error('Digite un valor válido para Compactness.')
     valid = False
 
-# =========================
+
 # BOTÓN DE PREDICCIÓN
-# =========================
+
 
 if st.button('Predecir cluster'):
 
@@ -165,16 +165,16 @@ if st.button('Predecir cluster'):
         # PCA nuevo punto
         new_pca = pca.transform(new_scaled)
 
-        # =========================
+       
         # RESULTADO
-        # =========================
+        
 
         st.subheader('Resultado de la predicción')
         st.success(f'  Cluster predicho: **{cluster}**')
 
-        # =========================
+        
         # INTERPRETACIÓN
-        # =========================
+        
 
         interpretations = {
             0: 'Frijoles grandes y compactos',
@@ -189,9 +189,9 @@ if st.button('Predecir cluster'):
         if cluster in interpretations:
             st.info(f'  {interpretations[cluster]}')
 
-        # =========================
+        
         # VISUALIZACIÓN
-        # =========================
+        
 
         st.subheader('Visualización de clusters')
 
@@ -258,9 +258,9 @@ if st.button('Predecir cluster'):
         plt.tight_layout()
         st.pyplot(fig)
 
-# =========================
+
 # INFORMACIÓN DEL MODELO
-# =========================
+
 
 st.subheader('Información del modelo')
 st.write(f'**Número de clusters:** {kmeans.n_clusters}')
