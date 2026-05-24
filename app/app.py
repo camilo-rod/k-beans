@@ -1,12 +1,13 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
-import joblib
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from matplotlib.colors import ListedColormap
 from pathlib import Path
 from sklearn.decomposition import PCA
+import re
+
+from src.preprocessing import load_data, get_features
+from src.predict import load_model, load_scaler, predict_cluster
 
 # =========================
 # CONFIGURACIÓN GENERAL
@@ -36,38 +37,20 @@ header_path = Path(__file__).parent / 'templates' / 'header.html'
 with open(header_path, 'r', encoding='utf-8') as f:
     raw_html = f.read()
 
-# Extraer solo el contenido dentro del <body>
-import re
 body_match = re.search(r'<body>(.*?)</body>', raw_html, re.DOTALL)
 header_html = body_match.group(1).strip() if body_match else raw_html
 
 st.markdown(header_html, unsafe_allow_html=True)
 
 # =========================
-# CARGAR MODELO Y SCALER
+# CARGAR MODELO, SCALER Y DATOS
 # =========================
 
-kmeans = joblib.load('models/kmeans_model.pkl')
-scaler = joblib.load('models/scaler.pkl')
+kmeans = load_model('models/kmeans_model.pkl')
+scaler = load_scaler('models/scaler.pkl')
 
-# =========================
-# CARGAR DATASET
-# =========================
-
-df = pd.read_csv('data/processed/Dry_Bean_Dataset_clean.csv')
-df.columns = df.columns.str.strip()
-
-# =========================
-# FEATURES
-# =========================
-
-features = [
-    'Area',
-    'Perimeter',
-    'MajorAxisLength',
-    'MinorAxisLength',
-    'Compactness'
-]
+df = load_data('data/processed/Dry_Bean_Dataset_clean.csv')
+features = get_features()
 
 # =========================
 # VALIDAR FEATURES
@@ -80,20 +63,11 @@ if len(missing) > 0:
     st.stop()
 
 # =========================
-# DATOS PARA EL MODELO
+# DATOS PARA VISUALIZACIÓN
 # =========================
 
 X = df[features].copy()
-
-# =========================
-# ESCALAR DATOS
-# =========================
-
 X_scaled = scaler.transform(X)
-
-# =========================
-# PCA
-# =========================
 
 pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X_scaled)
@@ -173,18 +147,6 @@ if compactness < 0.60 or compactness > 0.95:
     valid = False
 
 # =========================
-# NUEVO REGISTRO
-# =========================
-
-new_data = pd.DataFrame({
-    'Area':           [area],
-    'Perimeter':      [perimeter],
-    'MajorAxisLength':[major_axis],
-    'MinorAxisLength':[minor_axis],
-    'Compactness':    [compactness]
-})
-
-# =========================
 # BOTÓN DE PREDICCIÓN
 # =========================
 
@@ -192,11 +154,11 @@ if st.button('Predecir cluster'):
 
     if valid:
 
-        # Escalar datos
-        new_scaled = scaler.transform(new_data)
-
-        # Predicción
-        prediction = kmeans.predict(new_scaled)
+        # Predicción usando src/predict.py
+        cluster, new_scaled = predict_cluster(
+            kmeans, scaler,
+            area, perimeter, major_axis, minor_axis, compactness
+        )
 
         # PCA nuevo punto
         new_pca = pca.transform(new_scaled)
@@ -206,7 +168,7 @@ if st.button('Predecir cluster'):
         # =========================
 
         st.subheader('Resultado de la predicción')
-        st.success(f'  Cluster predicho: **{prediction[0]}**')
+        st.success(f'  Cluster predicho: **{cluster}**')
 
         # =========================
         # INTERPRETACIÓN
@@ -222,8 +184,8 @@ if st.button('Predecir cluster'):
             6: 'Frijoles con características mixtas'
         }
 
-        if prediction[0] in interpretations:
-            st.info(f'  {interpretations[prediction[0]]}')
+        if cluster in interpretations:
+            st.info(f'  {interpretations[cluster]}')
 
         # =========================
         # VISUALIZACIÓN
@@ -238,7 +200,6 @@ if st.button('Predecir cluster'):
 
         n_clusters  = kmeans.n_clusters
         colors      = SKLEARN_COLORS[:n_clusters]
-        cmap        = ListedColormap(colors)
         labels      = kmeans.labels_
 
         centroids_pca = np.array([
