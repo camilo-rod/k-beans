@@ -117,29 +117,50 @@ with tab1:
         # PROGRESS
         st.progress(int(score))
 
+
 # TAB 2
 with tab2:
-    PALETTE = ['#4CAF50', '#FF9800', '#00BCD4', '#9C27B0', '#E91E63', '#FFC107', '#795548']
-    colors = PALETTE[:kmeans.n_clusters]
+    import seaborn as sns
+    import pandas as pd
 
-    fig, ax = plt.subplots(figsize=(13, 8))
-    ax.set_facecolor("#ffffff")
+    PALETTE = ['#4a90c4', '#d85a30', '#3b9e75', '#e8a020', '#9b59b6', '#e74c3c', '#1abc9c']
 
-    for i in range(kmeans.n_clusters):
-        mask = labels == i
-        ax.scatter(X_pca[mask, 0], X_pca[mask, 1], c=colors[i], s=80, alpha=0.7,
-                   label=CLUSTER_NAMES.get(i, f"Cluster {i}"))
+    pca_df = pd.DataFrame({
+        'PCA1': X_pca[:, 0],
+        'PCA2': X_pca[:, 1],
+        'Cluster': labels
+    })
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    sns.scatterplot(
+        data=pca_df,
+        x='PCA1',
+        y='PCA2',
+        hue='Cluster',
+        palette=PALETTE[:kmeans.n_clusters],
+        alpha=0.7,
+        s=40,
+        edgecolor='white',
+        linewidth=0.3,
+        ax=ax
+    )
 
     if "new_pca" in st.session_state:
         point = st.session_state["new_pca"]
         ax.scatter(point[:, 0], point[:, 1], s=500, marker="*", color="red", label="Nuevo punto")
 
-    ax.set_xlabel("Componente principal 1", fontsize=11)
-    ax.set_ylabel("Componente principal 2", fontsize=11)
-    ax.set_title("Clusters de frijoles", fontsize=13, pad=12)
+    ax.set_title('Clusters de frijoles', fontsize=13, pad=12)
+    ax.set_xlabel('Componente principal 1', fontsize=11)
+    ax.set_ylabel('Componente principal 2', fontsize=11)
     ax.grid(linestyle='--', linewidth=0.7, alpha=0.7, color='gray')
     ax.set_axisbelow(True)
-    ax.legend(title="Variedad", fontsize=10)
+
+    legend = ax.get_legend()
+    legend.set_title('Cluster', prop={'size': 10})
+    for text in legend.get_texts():
+        text.set_fontsize(9)
+
     for spine in ax.spines.values():
         spine.set_edgecolor('#4a90c4')
         spine.set_linewidth(0.8)
