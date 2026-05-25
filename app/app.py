@@ -36,11 +36,11 @@ with open(css_path,'r',encoding='utf-8') as f:
     )
 
 
-# HEADER
-
 from pathlib import Path
 import streamlit as st
+import re
 
+# HEADER HTML
 header_path = Path(__file__).parent / "templates" / "header.html"
 
 with open(header_path, "r", encoding="utf-8") as f:
@@ -58,17 +58,32 @@ header_html = (
     else raw_html
 )
 
-# Mostrar layout con logo REAL de Streamlit (ESTO ES LO IMPORTANTE)
-col1, col2 = st.columns([1, 6])
-
+# LOGO
 logo_path = Path(__file__).parent / "static" / "logo.png"
 
+# HEADER VISUAL PRO
+col1, col2 = st.columns([1, 6], vertical_alignment="center")
+
 with col1:
-    st.image(str(logo_path), width=120)
+    st.image(str(logo_path), width=180)  # 🔥 más grande
 
 with col2:
-    st.markdown(header_html, unsafe_allow_html=True)
+    st.markdown(
+        """
+        <h1 style="
+            margin: 0;
+            font-size: 52px;
+            font-weight: 800;
+            color: #2e7d32;
+        ">
+            K-Beans 🌱
+        </h1>
+        """,
+        unsafe_allow_html=True
+    )
 
+# TU HTML EXTRA (si lo quieres debajo del header)
+st.markdown(header_html, unsafe_allow_html=True)
 # MODELO
 
 kmeans=load_model(
