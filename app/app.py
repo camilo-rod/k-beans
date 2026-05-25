@@ -104,20 +104,20 @@ Puedes obtener estos valores con herramientas de análisis de imagen o medición
 
     st.info("""
 **¿Cómo medir tu frijol?**
-- **Área**: superficie total del frijol en píxeles (10 000 – 80 000)
-- **Perímetro**: longitud del contorno del frijol (400 – 1 200)
-- **MajorAxisLength**: largo del eje más largo del frijol (150 – 500)
-- **MinorAxisLength**: largo del eje más corto del frijol (80 – 250)
+- **Área**: superficie total del frijol en píxeles (10 000 – 200 000)
+- **Perímetro**: longitud del contorno del frijol (400 – 1 700)
+- **MajorAxisLength**: largo del eje más largo del frijol (150 – 650)
+- **MinorAxisLength**: largo del eje más corto del frijol (80 – 400)
 - **Compactness**: qué tan redondo es el frijol, donde 1.0 es perfectamente redondo (0.60 – 0.95)
 """)
 
     col1, col2 = st.columns(2)
     with col1:
-        area = st.slider("Área (px²)", 10000, 80000, 42000, help="Superficie total del frijol")
-        perimeter = st.slider("Perímetro (px)", 400, 1200, 700, help="Longitud del contorno")
-        major_axis = st.slider("MajorAxisLength (px)", 150, 500, 250, help="Eje más largo del frijol")
+        area = st.slider("Área (px²)", 10000, 200000, 42000, help="Superficie total del frijol")
+        perimeter = st.slider("Perímetro (px)", 400, 1700, 700, help="Longitud del contorno")
+        major_axis = st.slider("MajorAxisLength (px)", 150, 650, 250, help="Eje más largo del frijol")
     with col2:
-        minor_axis = st.slider("MinorAxisLength (px)", 80, 250, 150, help="Eje más corto del frijol")
+        minor_axis = st.slider("MinorAxisLength (px)", 80, 400, 150, help="Eje más corto del frijol")
         compactness = st.slider("Compactness", 0.60, 0.95, 0.80, help="Qué tan redondo es el frijol")
 
     # BOTÓN
