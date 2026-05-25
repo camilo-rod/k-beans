@@ -1,37 +1,44 @@
 import streamlit as st
 import numpy as np
-import plotly.express as px
+import matplotlib.pyplot as plt
 from pathlib import Path
 from sklearn.decomposition import PCA
 import re
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(
+    0,
+    os.path.dirname(
+        os.path.dirname(
+            os.path.abspath(__file__)
+        )
+    )
+)
 
-from src.preprocessing import load_data, get_features
-from src.predict import load_model, load_scaler, predict_cluster
+from src.preprocessing import load_data,get_features
+from src.predict import load_model,load_scaler,predict_cluster
 
 
 # CONFIGURACIÓN
 
 st.set_page_config(
-    page_title='K-Beans',
-    page_icon='🌱',
-    layout='wide'
+    page_title="K-Beans",
+    page_icon="🌱",
+    layout="wide"
 )
 
 
 # CSS
 
-css_path = Path(__file__).parent/'static'/'style.css'
+css_path=Path(__file__).parent/'static'/'style.css'
 
 with open(css_path,'r',encoding='utf-8') as f:
     css_content=f.read()
 
 st.markdown(
-    f"<style>{css_content}</style>",
-    unsafe_allow_html=True
+f"<style>{css_content}</style>",
+unsafe_allow_html=True
 )
 
 
@@ -60,7 +67,7 @@ unsafe_allow_html=True
 )
 
 
-# MODELO
+# CARGAR MODELO
 
 kmeans=load_model(
 'models/kmeans_model.pkl'
@@ -78,24 +85,28 @@ features=get_features()
 
 
 missing=[
-col for col in features
+col
+for col in features
 if col not in df.columns
 ]
 
 if missing:
 
     st.error(
-        f'Columnas faltantes: {missing}'
+    f"Faltan columnas: {missing}"
     )
 
     st.stop()
 
 
+
 # DATOS PCA
 
-X=df[features].copy()
+X=df[features]
 
-X_scaled=scaler.transform(X)
+X_scaled=scaler.transform(
+X
+)
 
 pca=PCA(
 n_components=2
@@ -108,7 +119,7 @@ X_scaled
 labels=kmeans.labels_
 
 
-# DASHBOARD ARRIBA
+# DASHBOARD
 
 st.subheader(
 "Resumen del modelo"
@@ -117,34 +128,39 @@ st.subheader(
 c1,c2,c3=st.columns(3)
 
 with c1:
+
     st.metric(
     "Clusters",
     kmeans.n_clusters
     )
 
 with c2:
+
     st.metric(
-    "Algoritmo",
+    "Modelo",
     "K-Means"
     )
 
 with c3:
+
     st.metric(
     "Registros",
     len(df)
     )
 
 
-# PESTAÑAS
+# TABS
 
 tab1,tab2,tab3=st.tabs([
+
 "Predicción",
 "Análisis",
 "Información"
+
 ])
 
 
-# PREDICCIÓN
+# TAB PREDICCIÓN
 
 with tab1:
 
@@ -177,6 +193,7 @@ with tab1:
         250
         )
 
+
     with col2:
 
         minor_axis=st.slider(
@@ -195,26 +212,34 @@ with tab1:
 
 
     if st.button(
-    "Predecir cluster"
+    "Predecir Cluster"
     ):
 
         cluster,new_scaled=(
+
         predict_cluster(
+
         kmeans,
         scaler,
+
         area,
         perimeter,
         major_axis,
         minor_axis,
         compactness
+
         )
         )
 
-        new_pca=(
-        pca.transform(
+
+        new_pca=pca.transform(
         new_scaled
         )
-        )
+
+
+        st.session_state[
+        "new_pca"
+        ]=new_pca
 
 
         st.subheader(
@@ -222,7 +247,7 @@ with tab1:
         )
 
         st.success(
-        f"Cluster predicho: {cluster}"
+        f"Cluster detectado: {cluster}"
         )
 
 
@@ -245,23 +270,27 @@ with tab1:
         }
 
         st.info(
+
         interpretations.get(
         cluster,
         "Sin descripción"
         )
+
         )
 
 
-        # BARRA DE SIMILITUD
+        # SIMILITUD
 
         st.subheader(
         "Nivel de similitud"
         )
 
         distance=np.min(
+
         kmeans.transform(
         new_scaled
         )
+
         )
 
         score=max(
@@ -278,7 +307,7 @@ with tab1:
         )
 
 
-        # IMÁGENES
+        # IMAGEN
 
         bean_images={
 
@@ -296,23 +325,18 @@ with tab1:
         cluster
         )
 
-        if os.path.exists(
+        if image_path and os.path.exists(
         image_path
         ):
 
             st.image(
             image_path,
-            width=250
+            width=280
             )
 
 
-        # GUARDAR PARA OTRA PESTAÑA
 
-        st.session_state["new_pca"]=new_pca
-
-
-
-# ANÁLISIS
+# TAB ANÁLISIS
 
 with tab2:
 
@@ -320,17 +344,62 @@ with tab2:
     "Visualización de clusters"
     )
 
-    fig=px.scatter(
 
-    x=X_pca[:,0],
+    palette=[
+    '#4A6741',
+    '#C4714A',
+    '#7A9E72',
+    '#D4B896',
+    '#6A513C',
+    '#A95D3D',
+    '#3B2A1A'
+    ]
 
-    y=X_pca[:,1],
+    colors=palette[
+    :kmeans.n_clusters
+    ]
 
-    color=labels.astype(str),
 
-    title="Clusters de frijoles"
-
+    fig,ax=plt.subplots(
+    figsize=(12,8)
     )
+
+    fig.patch.set_facecolor(
+    '#FDFAF5'
+    )
+
+    ax.set_facecolor(
+    '#FDFAF5'
+    )
+
+    ax.grid(
+    alpha=.3,
+    linestyle='--'
+    )
+
+
+    for i in range(
+    kmeans.n_clusters
+    ):
+
+        mask=labels==i
+
+        ax.scatter(
+
+        X_pca[mask,0],
+
+        X_pca[mask,1],
+
+        c=colors[i],
+
+        s=70,
+
+        alpha=.65,
+
+        edgecolors='white',
+
+        label=f'Cluster {i}'
+        )
 
 
     if "new_pca" in st.session_state:
@@ -339,32 +408,49 @@ with tab2:
         "new_pca"
         ]
 
-        fig.add_scatter(
+        ax.scatter(
 
-        x=point[:,0],
+        point[:,0],
 
-        y=point[:,1],
+        point[:,1],
 
-        mode="markers",
+        s=450,
 
-        marker=dict(
-        size=18,
-        symbol="star"
-        ),
+        marker='*',
 
-        name="Nuevo frijol"
+        color='#C4714A',
 
+        edgecolors='black',
+
+        linewidths=1.5,
+
+        label='Nuevo frijol'
         )
 
 
-    st.plotly_chart(
-    fig,
-    use_container_width=True
+    ax.set_title(
+    "Clusters de frijoles",
+    fontsize=18,
+    fontweight='bold'
+    )
+
+    ax.set_xlabel(
+    "PCA 1"
+    )
+
+    ax.set_ylabel(
+    "PCA 2"
+    )
+
+    ax.legend()
+
+    st.pyplot(
+    fig
     )
 
 
 
-# INFORMACIÓN
+# TAB INFORMACIÓN
 
 with tab3:
 
@@ -375,11 +461,9 @@ with tab3:
     st.write("""
 
 ### Dataset
-
 Dry Bean Dataset
 
-
-### Variables utilizadas
+### Variables
 
 - Area
 - Perimeter
@@ -387,11 +471,9 @@ Dry Bean Dataset
 - MinorAxisLength
 - Compactness
 
-
 ### Algoritmo
 
 K-Means Clustering
-
 
 ### Preprocesamiento
 
@@ -400,28 +482,20 @@ StandardScaler
 """)
 
 
-# ACERCA DEL PROYECTO
-
 with st.expander(
 "Información del proyecto"
 ):
 
     st.write("""
 
-Dataset:
-Dry Bean Dataset
+Dataset: Dry Bean Dataset
 
-Algoritmo:
-K-Means
+Modelo: K-Means
 
-Características:
-Area
-Perimeter
-MajorAxisLength
-MinorAxisLength
-Compactness
+Autor: Victor Daniel
 
-Autor:
-Victor Daniel
+K-Beans es un sistema de clasificación
+y análisis de frijoles basado en
+Machine Learning.
 
 """)
