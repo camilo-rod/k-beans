@@ -39,7 +39,6 @@ with open(css_path,'r',encoding='utf-8') as f:
 # HEADER
 
 from pathlib import Path
-import re
 import streamlit as st
 
 header_path = Path(__file__).parent / "templates" / "header.html"
@@ -59,16 +58,16 @@ header_html = (
     else raw_html
 )
 
-# ❌ BLOQUE CRÍTICO: arreglar rutas de imágenes dentro del HTML
-static_path = Path(__file__).parent / "static"
+# Mostrar layout con logo REAL de Streamlit (ESTO ES LO IMPORTANTE)
+col1, col2 = st.columns([1, 6])
 
-header_html = header_html.replace(
-    "src=\"static/",
-    f"src=\"{static_path.as_posix()}/"
-)
+logo_path = Path(__file__).parent / "static" / "logo.png"
 
-# MOSTRAR HEADER
-st.markdown(header_html, unsafe_allow_html=True)
+with col1:
+    st.image(str(logo_path), width=120)
+
+with col2:
+    st.markdown(header_html, unsafe_allow_html=True)
 
 # MODELO
 
