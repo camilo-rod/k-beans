@@ -20,7 +20,7 @@ from src.preprocessing import load_data,get_features
 from src.predict import load_model,load_scaler,predict_cluster
 
 
-# CONFIGURACIÓN
+# CONFIG
 
 st.set_page_config(
     page_title="K-Beans",
@@ -34,12 +34,10 @@ st.set_page_config(
 css_path=Path(__file__).parent/'static'/'style.css'
 
 with open(css_path,'r',encoding='utf-8') as f:
-    css_content=f.read()
-
-st.markdown(
-f"<style>{css_content}</style>",
-unsafe_allow_html=True
-)
+    st.markdown(
+        f"<style>{f.read()}</style>",
+        unsafe_allow_html=True
+    )
 
 
 # HEADER
@@ -47,6 +45,7 @@ unsafe_allow_html=True
 header_path=Path(__file__).parent/'templates'/'header.html'
 
 with open(header_path,'r',encoding='utf-8') as f:
+
     raw_html=f.read()
 
 body_match=re.search(
@@ -67,7 +66,7 @@ unsafe_allow_html=True
 )
 
 
-# CARGAR MODELO
+# MODELO
 
 kmeans=load_model(
 'models/kmeans_model.pkl'
@@ -84,10 +83,16 @@ df=load_data(
 features=get_features()
 
 
+# VALIDACIÓN
+
 missing=[
+
 col
+
 for col in features
+
 if col not in df.columns
+
 ]
 
 if missing:
@@ -99,8 +104,7 @@ if missing:
     st.stop()
 
 
-
-# DATOS PCA
+# PCA
 
 X=df[features]
 
@@ -149,23 +153,35 @@ with c3:
     )
 
 
+st.markdown("""
+
+K-Beans utiliza Machine Learning
+para detectar patrones geométricos
+y clasificar frijoles según sus
+características físicas.
+
+""")
+
+
 # TABS
 
-tab1,tab2,tab3=st.tabs([
+tab1,tab2,tab3=st.tabs(
 
+[
 "Predicción",
 "Análisis",
 "Información"
+]
 
-])
+)
 
 
-# TAB PREDICCIÓN
+# TAB 1
 
 with tab1:
 
     st.subheader(
-    "Ingresar datos del frijol"
+    "Ingresar datos"
     )
 
     col1,col2=st.columns(2)
@@ -193,7 +209,6 @@ with tab1:
         250
         )
 
-
     with col2:
 
         minor_axis=st.slider(
@@ -216,7 +231,6 @@ with tab1:
     ):
 
         cluster,new_scaled=(
-
         predict_cluster(
 
         kmeans,
@@ -227,70 +241,47 @@ with tab1:
         major_axis,
         minor_axis,
         compactness
-
         )
         )
 
+        st.session_state["cluster"]=cluster
 
         new_pca=pca.transform(
         new_scaled
         )
-
 
         st.session_state[
         "new_pca"
         ]=new_pca
 
 
-        st.subheader(
-        "Resultado"
-        )
-
         st.success(
         f"Cluster detectado: {cluster}"
         )
 
-
         interpretations={
 
         0:"Frijoles grandes y compactos",
-
         1:"Frijoles pequeños y alargados",
-
         2:"Frijoles medianos y uniformes",
-
-        3:"Frijoles con geometría irregular",
-
-        4:"Frijoles densos y redondos",
-
+        3:"Geometría irregular",
+        4:"Frijoles densos",
         5:"Grupo especializado",
-
         6:"Características mixtas"
 
         }
 
         st.info(
-
         interpretations.get(
-        cluster,
-        "Sin descripción"
+        cluster
+        )
         )
 
-        )
-
-
-        # SIMILITUD
-
-        st.subheader(
-        "Nivel de similitud"
-        )
 
         distance=np.min(
-
         kmeans.transform(
         new_scaled
         )
-
         )
 
         score=max(
@@ -298,82 +289,68 @@ with tab1:
         100-(distance*10)
         )
 
+        st.subheader(
+        "Nivel de similitud"
+        )
+
         st.progress(
         int(score)
         )
 
         st.write(
-        f"Similitud: {score:.1f}%"
+        f"{score:.1f}%"
         )
 
 
-# IMAGEN
+        bean_images={
 
-bean_images={
+        0:Path(__file__).parent/"static"/"bean0.png",
+        1:Path(__file__).parent/"static"/"bean1.png",
+        2:Path(__file__).parent/"static"/"bean2.png",
+        3:Path(__file__).parent/"static"/"bean3.png",
+        4:Path(__file__).parent/"static"/"bean4.png",
+        5:Path(__file__).parent/"static"/"bean5.png",
+        6:Path(__file__).parent/"static"/"bean6.png"
 
-0: Path(__file__).parent/"static"/"bean0.png",
-1: Path(__file__).parent/"static"/"bean1.png",
-2: Path(__file__).parent/"static"/"bean2.png",
-3: Path(__file__).parent/"static"/"bean3.png",
-4: Path(__file__).parent/"static"/"bean4.png",
-5: Path(__file__).parent/"static"/"bean5.png",
-6: Path(__file__).parent/"static"/"bean6.png"
+        }
 
-}
-
-image_path=bean_images.get(cluster)
-
-if image_path and image_path.exists():
-
-    st.markdown(
-    "<h3 style='text-align:center'>Tipo de frijol detectado</h3>",
-    unsafe_allow_html=True
-    )
-
-    c1,c2,c3=st.columns([1,2,1])
-
-    with c2:
-
-        st.image(
-        str(image_path),
-        use_container_width=True
+        image_path=bean_images.get(
+        cluster
         )
 
-else:
+        if image_path.exists():
 
-    st.warning(
-    "No se encontró la imagen del frijol."
-    )
+            st.image(
+            str(image_path),
+            width=300
+            )
 
-# TAB ANÁLISIS
+
+# TAB 2
 
 with tab2:
 
-    st.subheader(
-    "Visualización K-Means"
-    )
-
     palette=[
 
-'#4CAF50',  # verde hoja
-'#FF9800',  # naranja cálido
-'#00BCD4',  # turquesa
-'#9C27B0',  # morado
-'#E91E63',  # rosado
-'#FFC107',  # amarillo
-'#795548'   # café
+    '#4CAF50',
+    '#FF9800',
+    '#00BCD4',
+    '#9C27B0',
+    '#E91E63',
+    '#FFC107',
+    '#795548'
 
-]
+    ]
 
     colors=palette[
     :kmeans.n_clusters
     ]
 
-    # CENTROIDES PCA
-
     centroids_pca=np.array([
 
-    X_pca[labels==i].mean(axis=0)
+    X_pca[
+    labels==i
+    ].mean(axis=0)
 
     for i in range(
     kmeans.n_clusters
@@ -383,169 +360,84 @@ with tab2:
 
 
     fig,ax=plt.subplots(
-figsize=(13,8)
-)
+    figsize=(13,8)
+    )
 
-fig.patch.set_facecolor('#f8fafc')
+    ax.set_facecolor(
+    "#ffffff"
+    )
 
-ax.set_facecolor('#ffffff')
+    for i in range(
+    kmeans.n_clusters
+    ):
 
-ax.grid(
-linestyle='--',
-linewidth=.8,
-alpha=.2
-)
+        mask=labels==i
+
+        ax.scatter(
+
+        X_pca[mask,0],
+        X_pca[mask,1],
+
+        c=colors[i],
+
+        s=80,
+
+        alpha=.7,
+
+        label=f"Cluster {i}"
+
+        )
 
 
-for i in range(kmeans.n_clusters):
+    if "new_pca" in st.session_state:
 
-    mask=labels==i
+        point=st.session_state[
+        "new_pca"
+        ]
 
-    ax.scatter(
+        ax.scatter(
 
-    X_pca[mask,0],
-    X_pca[mask,1],
+        point[:,0],
+        point[:,1],
 
-    c=colors[i],
-    alpha=.75,
-    s=80,
+        s=500,
 
-    edgecolors='white',
+        marker="*",
 
-    linewidths=1,
+        color="red",
 
-    label=f'Cluster {i}'
+        label="Nuevo"
+
+        )
+
+    ax.legend()
+
+    st.pyplot(
+    fig
     )
 
 
-ax.scatter(
-
-centroids_pca[:,0],
-centroids_pca[:,1],
-
-s=500,
-
-marker='o',
-
-c=colors,
-
-edgecolors='black',
-
-linewidths=2,
-
-zorder=5
-
-)
-
-
-for i,(cx,cy) in enumerate(
-centroids_pca
-):
-
-    ax.text(
-
-    cx,
-    cy,
-
-    str(i),
-
-    fontsize=11,
-
-    fontweight='bold',
-
-    color='white',
-
-    ha='center',
-
-    va='center'
-
-    )
-
-
-if "new_pca" in st.session_state:
-
-    point=st.session_state["new_pca"]
-
-    ax.scatter(
-
-    point[:,0],
-    point[:,1],
-
-    s=700,
-
-    marker='*',
-
-    color='#ff1744',
-
-    edgecolors='black',
-
-    linewidths=2,
-
-    label='Nuevo frijol'
-
-    )
-
-
-ax.set_title(
-
-"Mapa inteligente de clusters K-Beans",
-
-fontsize=22,
-
-fontweight='bold',
-
-pad=20
-
-)
-
-ax.set_xlabel(
-"Componente Principal 1"
-)
-
-ax.set_ylabel(
-"Componente Principal 2"
-)
-
-legend=ax.legend(
-fontsize=10,
-frameon=True
-)
-
-legend.get_frame().set_alpha(.95)
-
-for spine in ax.spines.values():
-
-    spine.set_visible(False)
-
-plt.tight_layout()
-
-st.pyplot(fig)
-
-
-# TAB INFORMACIÓN
+# TAB 3
 
 with tab3:
-
-    st.subheader(
-    "Información del modelo"
-    )
 
     st.write("""
 
 ### Dataset
+
 Dry Bean Dataset
 
 ### Variables
 
-- Area
-- Perimeter
-- MajorAxisLength
-- MinorAxisLength
-- Compactness
+• Area  
+• Perimeter  
+• MajorAxisLength  
+• MinorAxisLength  
+• Compactness  
 
 ### Algoritmo
 
-K-Means Clustering
+K-Means
 
 ### Preprocesamiento
 
@@ -560,14 +452,11 @@ with st.expander(
 
     st.write("""
 
-Dataset: Dry Bean Dataset
+K-Beans es un sistema inteligente
+para clasificación automática
+de frijoles usando Machine Learning.
 
-Modelo: K-Means
-
-Autor: Victor Daniel
-
-K-Beans es un sistema de clasificación
-y análisis de frijoles basado en
-Machine Learning.
+Autor:
+Victor Daniel
 
 """)
