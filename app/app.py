@@ -1,10 +1,13 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import plotly.express as px
+import sys
+import os
 
-from pathlib import Path
-from sklearn.decomposition import PCA
+ROOT_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
+
+sys.path.append(ROOT_DIR)
 
 from src.preprocessing import load_data, get_features
 from src.predict import load_model, load_scaler, predict_cluster
