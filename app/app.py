@@ -22,11 +22,13 @@ from src.predict import load_model,load_scaler,predict_cluster
 
 # CONFIG
 
-st.set_page_config(
-    page_title="K-Beans",
-    page_icon="🌱",
-    layout="wide"
-)
+col1, col2 = st.columns([1, 5])
+
+with col1:
+    st.image("static/logo.png", width=120)
+
+with col2:
+    st.title("K-Beans 🌱")
 
 
 # CSS
