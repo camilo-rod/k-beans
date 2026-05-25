@@ -38,29 +38,37 @@ with open(css_path,'r',encoding='utf-8') as f:
 
 # HEADER
 
-header_path=Path(__file__).parent/'templates'/'header.html'
+from pathlib import Path
+import re
+import streamlit as st
 
-with open(header_path,'r',encoding='utf-8') as f:
+header_path = Path(__file__).parent / "templates" / "header.html"
 
-    raw_html=f.read()
+with open(header_path, "r", encoding="utf-8") as f:
+    raw_html = f.read()
 
-body_match=re.search(
-r'<body>(.*?)</body>',
-raw_html,
-re.DOTALL
+body_match = re.search(
+    r"<body>(.*?)</body>",
+    raw_html,
+    re.DOTALL
 )
 
-header_html=(
-body_match.group(1).strip()
-if body_match
-else raw_html
+header_html = (
+    body_match.group(1).strip()
+    if body_match
+    else raw_html
 )
 
-st.markdown(
-header_html,
-unsafe_allow_html=True
+# ❌ BLOQUE CRÍTICO: arreglar rutas de imágenes dentro del HTML
+static_path = Path(__file__).parent / "static"
+
+header_html = header_html.replace(
+    "src=\"static/",
+    f"src=\"{static_path.as_posix()}/"
 )
 
+# MOSTRAR HEADER
+st.markdown(header_html, unsafe_allow_html=True)
 
 # MODELO
 
