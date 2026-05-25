@@ -341,9 +341,8 @@ with tab1:
 with tab2:
 
     st.subheader(
-    "Visualización de clusters"
+    "Visualización K-Means"
     )
-
 
     palette=[
     '#4A6741',
@@ -359,6 +358,18 @@ with tab2:
     :kmeans.n_clusters
     ]
 
+    # CENTROIDES PCA
+
+    centroids_pca=np.array([
+
+    X_pca[labels==i].mean(axis=0)
+
+    for i in range(
+    kmeans.n_clusters
+    )
+
+    ])
+
 
     fig,ax=plt.subplots(
     figsize=(12,8)
@@ -372,11 +383,14 @@ with tab2:
     '#FDFAF5'
     )
 
+
     ax.grid(
-    alpha=.3,
-    linestyle='--'
+    linestyle='--',
+    alpha=.3
     )
 
+
+    # CLUSTERS
 
     for i in range(
     kmeans.n_clusters
@@ -392,15 +406,69 @@ with tab2:
 
         c=colors[i],
 
-        s=70,
-
         alpha=.65,
 
+        s=55,
+
         edgecolors='white',
+
+        linewidths=.5,
 
         label=f'Cluster {i}'
         )
 
+
+    # CENTROIDES
+
+    ax.scatter(
+
+    centroids_pca[:,0],
+    centroids_pca[:,1],
+
+    s=350,
+
+    marker='o',
+
+    c=colors,
+
+    edgecolors='#2c2c2c',
+
+    linewidths=2,
+
+    zorder=5
+
+    )
+
+
+    # NUMEROS CENTROIDES
+
+    for i,(cx,cy) in enumerate(
+    centroids_pca
+    ):
+
+        ax.text(
+
+        cx,
+        cy,
+
+        str(i),
+
+        fontsize=10,
+
+        fontweight='bold',
+
+        color='white',
+
+        ha='center',
+
+        va='center',
+
+        zorder=6
+
+        )
+
+
+    # NUEVO FRIJOL
 
     if "new_pca" in st.session_state:
 
@@ -411,10 +479,9 @@ with tab2:
         ax.scatter(
 
         point[:,0],
-
         point[:,1],
 
-        s=450,
+        s=500,
 
         marker='*',
 
@@ -424,30 +491,41 @@ with tab2:
 
         linewidths=1.5,
 
+        zorder=10,
+
         label='Nuevo frijol'
         )
 
 
     ax.set_title(
-    "Clusters de frijoles",
+    "Clusters K-Means de Frijoles",
     fontsize=18,
-    fontweight='bold'
+    fontweight='bold',
+    pad=15
     )
 
     ax.set_xlabel(
-    "PCA 1"
+    "Componente Principal 1"
     )
 
     ax.set_ylabel(
-    "PCA 2"
+    "Componente Principal 2"
     )
 
-    ax.legend()
-
-    st.pyplot(
-    fig
+    legend=ax.legend(
+    frameon=True,
+    fancybox=True,
+    shadow=True
     )
 
+    legend.get_frame().set_alpha(.95)
+
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    plt.tight_layout()
+
+    st.pyplot(fig)
 
 
 # TAB INFORMACIÓN
