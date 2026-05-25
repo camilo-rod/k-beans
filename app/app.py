@@ -81,7 +81,15 @@ BEAN_DESCRIPTIONS = {
 }
 
 # IMAGENES
-BEAN_IMAGES = {i: APP_DIR / "static" / f"bean{i}.png" for i in range(7)}
+BEAN_IMAGES = {
+    "Seker":    APP_DIR / "static" / "bean5.png",
+    "Barbunya": APP_DIR / "static" / "bean0.png",
+    "Bombay":   APP_DIR / "static" / "bean1.png",
+    "Sira":     APP_DIR / "static" / "bean6.png",
+    "Dermason": APP_DIR / "static" / "bean3.png",
+    "Cali":     APP_DIR / "static" / "bean2.png",
+    "Horoz":    APP_DIR / "static" / "bean4.png"
+}
 
 # DASHBOARD
 st.subheader("Resumen del modelo")
@@ -134,7 +142,7 @@ Puedes obtener estos valores con herramientas de análisis de imagen o medición
         score = max(0, 100 - (distance * 10))
 
         # IMAGEN + DESCRIPCIÓN
-        image_path = BEAN_IMAGES.get(cluster)
+        image_path = BEAN_IMAGES.get(bean_name)
         if image_path.exists():
             img_col, text_col = st.columns([1, 2])
             with img_col:
