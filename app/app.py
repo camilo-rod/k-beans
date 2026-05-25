@@ -113,60 +113,13 @@ Las medidas deben ser ingresadas manualmente según los datos obtenidos previame
 """)
 
     st.info("""
-## Guía para ingresar los datos del frijol
+**¿Cómo medir tu frijol?**
+- **Área**: superficie total del frijol en píxeles (10 000 – 200 000)
+- **Perímetro**: longitud del contorno del frijol (400 – 1 700)
+- **MajorAxisLength**: largo del eje más largo del frijol (150 – 650)
+- **MinorAxisLength**: largo del eje más corto del frijol (80 – 400)
+- **Compactness**: qué tan redondo es el frijol, donde 1.0 es perfectamente redondo (0.60 – 0.95)
 
-**1. Área (Area)**  
-Es el tamaño total del frijol.
-
-- Representa el espacio que ocupa el frijol.
-- Valores normales: entre 10 000 y 200 000.
-- Un frijol grande tendrá un área mayor.
-
----
-
-**2. Perímetro (Perimeter)**  
-Es la longitud total del borde del frijol.
-
-- Valores normales: entre 400 y 1 700.
-- Un frijol más grande o irregular tendrá un perímetro mayor.
-
----
-
-**3. Largo principal (MajorAxisLength)**  
-Es la distancia más larga del frijol.
-
-- Representa el eje principal.
-- Valores normales: entre 150 y 650.
-- Los frijoles alargados tienen valores más altos.
-
----
-
-**4. Largo secundario (MinorAxisLength)**  
-Es el ancho del frijol.
-
-- Representa el eje menor.
-- Valores normales: entre 80 y 400.
-- Los frijoles más gruesos tienen valores mayores.
-
----
-
-**5. Compactación (Compactness)**  
-Indica qué tan redondo o compacto es el frijol.
-
-- Valores normales: entre 0.60 y 0.95.
-- Valores cercanos a 1.0 indican un frijol más redondo.
-- Valores bajos indican un frijol más alargado.
-
----
-
-## Recomendaciones
-
-- Ingresa los valores correctamente.
-- Verifica que las medidas estén dentro de los rangos recomendados.
-- Usa datos reales obtenidos previamente para mejorar la precisión.
-
-El modelo funciona mejor cuando los datos son precisos.
-""")
     col1, col2 = st.columns(2)
     with col1:
         area = st.slider("Área (px²)", 10000, 200000, 42000, help="Superficie total del frijol")
