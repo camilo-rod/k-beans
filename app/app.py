@@ -35,43 +35,27 @@ with open(css_path,'r',encoding='utf-8') as f:
         unsafe_allow_html=True
     )
 
+#HEATER
 
 from pathlib import Path
 import streamlit as st
-import re
 
-from pathlib import Path
-import streamlit as st
-
+# LOGO
 logo_path = Path(__file__).parent / "static" / "logo.png"
 
-st.markdown(f"""
-<div class="kb-header">
+# HEADER VISUAL
+col1, col2 = st.columns([1, 6], vertical_alignment="center")
 
-    <div class="kb-bg-texture"></div>
+with col1:
+    st.image(str(logo_path), width=120)
 
-    <div class="kb-header-content">
+with col2:
+    header_path = Path(__file__).parent / "templates" / "header.html"
 
-        <div class="kb-title-container">
+    with open(header_path, "r", encoding="utf-8") as f:
+        header_html = f.read()
 
-            <img src="file://{logo_path}" class="kb-logo"/>
-
-            <h1 class="kb-title">
-                <span class="kb-title-k">K</span>
-                <span class="kb-title-dash">-</span>
-                <span class="kb-title-beans">Beans</span>
-            </h1>
-
-        </div>
-
-        <div class="kb-subtitle">
-            Sistema inteligente de clasificación de frijoles mediante Machine Learning y análisis geométrico.
-        </div>
-
-    </div>
-
-</div>
-""", unsafe_allow_html=True)
+    st.markdown(header_html, unsafe_allow_html=True)
 
 # MODELO
 
