@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from sklearn.decomposition import PCA
 import sys
-import os
 
 # ======================================================
 # PATHS
@@ -45,7 +44,7 @@ with open(css_path, "r", encoding="utf-8") as f:
     )
 
 # ======================================================
-# LOGO + HEADER
+# HEADER
 # ======================================================
 
 logo_path = APP_DIR / "static" / "logo.png"
@@ -72,7 +71,10 @@ with header_col1:
 with header_col2:
 
     st.markdown("""
+
     <div class="kb-header">
+
+    <div class="kb-bg-texture"></div>
 
     <div class="kb-header-content">
 
@@ -83,13 +85,14 @@ with header_col2:
     </h1>
 
     <p class="kb-subtitle">
-    Agrupación inteligente de frijoles mediante
-    K-Means y análisis de componentes principales
+    Sistema inteligente para clasificación automática
+    de frijoles usando Machine Learning y análisis geométrico.
     </p>
 
     </div>
 
     </div>
+
     """, unsafe_allow_html=True)
 
 # ======================================================
@@ -149,6 +152,67 @@ X_pca = pca.fit_transform(
 )
 
 labels = kmeans.labels_
+
+# ======================================================
+# MAPEO
+# ======================================================
+
+CLUSTER_NAMES = {
+
+    0: "Cali",
+    1: "Bombay",
+    2: "Sira",
+    3: "Dermason",
+    4: "Horoz",
+    5: "Barbunya",
+    6: "Seker"
+
+}
+
+# ======================================================
+# DESCRIPCIONES
+# ======================================================
+
+BEAN_DESCRIPTIONS = {
+
+    "Cali":
+    "Frijol grande y claro con textura uniforme.",
+
+    "Bombay":
+    "Frijol robusto y compacto de gran tamaño.",
+
+    "Sira":
+    "Frijol equilibrado y uniforme.",
+
+    "Dermason":
+    "Frijol pequeño y ligeramente alargado.",
+
+    "Horoz":
+    "Frijol denso con estructura fuerte.",
+
+    "Barbunya":
+    "Frijol irregular y ancho.",
+
+    "Seker":
+    "Frijol pequeño y compacto."
+
+}
+
+# ======================================================
+# IMAGENES
+# ======================================================
+
+BEAN_IMAGES = {
+
+    0: APP_DIR / "static" / "bean0.png",
+    1: APP_DIR / "static" / "bean1.png",
+    2: APP_DIR / "static" / "bean2.png",
+    3: APP_DIR / "static" / "bean3.png",
+    4: APP_DIR / "static" / "bean4.png",
+    5: APP_DIR / "static" / "bean5.png",
+    6: APP_DIR / "static" / "bean6.png"
+
+}
 
 # ======================================================
 # DASHBOARD
@@ -260,7 +324,7 @@ with tab1:
     # ==================================================
 
     if st.button(
-        "Predecir Cluster"
+        "Predecir Frijol"
     ):
 
         cluster, new_scaled = (
@@ -289,30 +353,17 @@ with tab1:
             "new_pca"
         ] = new_pca
 
-        st.success(
-            f"Cluster detectado: {cluster}"
+        bean_name = CLUSTER_NAMES.get(
+            cluster,
+            "Desconocido"
         )
 
-        interpretations = {
-
-            0: "Frijoles grandes y compactos",
-            1: "Frijoles pequeños y alargados",
-            2: "Frijoles medianos y uniformes",
-            3: "Geometría irregular",
-            4: "Frijoles densos",
-            5: "Grupo especializado",
-            6: "Características mixtas"
-
-        }
-
-        st.info(
-            interpretations.get(
-                cluster
-            )
+        st.success(
+            f"Frijol detectado: {bean_name}"
         )
 
         # ==================================================
-        # SIMILITUD
+        # SCORE
         # ==================================================
 
         distance = np.min(
@@ -328,44 +379,48 @@ with tab1:
             100 - (distance * 10)
         )
 
-        st.subheader(
-            "Nivel de similitud"
-        )
-
-        st.progress(
-            int(score)
-        )
-
-        st.write(
-            f"{score:.1f}%"
-        )
-
         # ==================================================
-        # IMAGENES
+        # IMAGEN + DESCRIPCIÓN
         # ==================================================
 
-        bean_images = {
-
-            0: APP_DIR / "static" / "bean0.png",
-            1: APP_DIR / "static" / "bean1.png",
-            2: APP_DIR / "static" / "bean2.png",
-            3: APP_DIR / "static" / "bean3.png",
-            4: APP_DIR / "static" / "bean4.png",
-            5: APP_DIR / "static" / "bean5.png",
-            6: APP_DIR / "static" / "bean6.png"
-
-        }
-
-        image_path = bean_images.get(
+        image_path = BEAN_IMAGES.get(
             cluster
         )
 
         if image_path.exists():
 
-            st.image(
-                str(image_path),
-                width=300
-            )
+            img_col, text_col = st.columns([1, 2])
+
+            with img_col:
+
+                st.image(
+                    str(image_path),
+                    width=260
+                )
+
+            with text_col:
+
+                st.markdown(f"""
+
+### {bean_name}
+
+{BEAN_DESCRIPTIONS.get(bean_name)}
+
+---
+
+### Nivel de similitud
+
+{score:.1f}%
+
+""")
+
+        # ==================================================
+        # PROGRESS
+        # ==================================================
+
+        st.progress(
+            int(score)
+        )
 
 # ======================================================
 # TAB 2
@@ -388,18 +443,6 @@ with tab2:
     colors = palette[
         :kmeans.n_clusters
     ]
-
-    centroids_pca = np.array([
-
-        X_pca[
-            labels == i
-        ].mean(axis=0)
-
-        for i in range(
-            kmeans.n_clusters
-        )
-
-    ])
 
     fig, ax = plt.subplots(
         figsize=(13, 8)
