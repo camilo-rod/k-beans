@@ -105,11 +105,8 @@ tab1, tab2, tab3 = st.tabs(["Predicción", "Análisis", "Información"])
 with tab1:
     st.markdown("""
 ### Analiza tu frijol
-
-En esta sección debes ingresar las medidas físicas del frijol que deseas identificar.  
-El sistema comparará esos datos con muestras del Dry Bean Dataset para predecir el tipo de frijol.
-
-Las medidas deben ser ingresadas manualmente según los datos obtenidos previamente en archivos, mediciones o herramientas de análisis.
+Ingresa las medidas físicas del frijol que deseas clasificar.
+Puedes obtener estos valores con herramientas de análisis de imagen o medición digital.
 """)
 
     st.info("""
@@ -119,6 +116,7 @@ Las medidas deben ser ingresadas manualmente según los datos obtenidos previame
 - **MajorAxisLength**: largo del eje más largo del frijol (150 – 650)
 - **MinorAxisLength**: largo del eje más corto del frijol (80 – 400)
 - **Compactness**: qué tan redondo es el frijol, donde 1.0 es perfectamente redondo (0.60 – 0.95)
+""")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -128,6 +126,7 @@ Las medidas deben ser ingresadas manualmente según los datos obtenidos previame
     with col2:
         minor_axis = st.slider("MinorAxisLength (px)", 80, 400, 150, help="Eje más corto del frijol")
         compactness = st.slider("Compactness", 0.60, 0.95, 0.80, help="Qué tan redondo es el frijol")
+
 
     # BOTÓN
     if st.button("Predecir Frijol"):
