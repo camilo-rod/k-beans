@@ -1,20 +1,32 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+
+from pathlib import Path
+from sklearn.decomposition import PCA
+
 import sys
 import os
 
-ROOT_DIR = os.path.dirname(
-    os.path.dirname(
-        os.path.abspath(__file__)
-    )
-)
+# ======================================================
+# PATHS
+# ======================================================
 
-sys.path.append(ROOT_DIR)
+BASE_DIR = Path(__file__).parent.parent
+
+sys.path.append(str(BASE_DIR))
+
+# ======================================================
+# IMPORTS
+# ======================================================
 
 from src.preprocessing import load_data, get_features
 from src.predict import load_model, load_scaler, predict_cluster
 
-# =========================================
+# ======================================================
 # CONFIG
-# =========================================
+# ======================================================
 
 st.set_page_config(
     page_title="K-Beans AI",
@@ -22,11 +34,11 @@ st.set_page_config(
     layout="wide"
 )
 
-# =========================================
+# ======================================================
 # CSS
-# =========================================
+# ======================================================
 
-css_path = Path(__file__).parent / "static" / "style.css"
+css_path = BASE_DIR / "static" / "style.css"
 
 with open(css_path, "r", encoding="utf-8") as f:
     st.markdown(
@@ -34,109 +46,109 @@ with open(css_path, "r", encoding="utf-8") as f:
         unsafe_allow_html=True
     )
 
-# =========================================
+# ======================================================
 # MODELOS
-# =========================================
+# ======================================================
 
-kmeans = load_model("models/kmeans_model.pkl")
+kmeans = load_model(
+    BASE_DIR / "models" / "kmeans_model.pkl"
+)
 
-scaler = load_scaler("models/scaler.pkl")
+scaler = load_scaler(
+    BASE_DIR / "models" / "scaler.pkl"
+)
 
-df = load_data("data/processed/Dry_Bean_Dataset_clean.csv")
+df = load_data(
+    BASE_DIR / "data" / "processed" / "Dry_Bean_Dataset_clean.csv"
+)
 
 features = get_features()
 
-# =========================================
-# MAPEO REAL
-# =========================================
+# ======================================================
+# INFORMACIÓN DE FRIJOLES
+# ======================================================
 
 CLUSTER_INFO = {
 
     0: {
         "name": "Cali",
-        "image": "static/bean0.png",
-        "description": "Frijol grande, claro y de textura uniforme."
+        "image": BASE_DIR / "static" / "bean0.png",
+        "description": "Frijol grande y claro con textura uniforme."
     },
 
     1: {
         "name": "Bombay",
-        "image": "static/bean1.png",
+        "image": BASE_DIR / "static" / "bean1.png",
         "description": "Frijol compacto y de gran tamaño."
     },
 
     2: {
         "name": "Sira",
-        "image": "static/bean2.png",
+        "image": BASE_DIR / "static" / "bean2.png",
         "description": "Frijol equilibrado y uniforme."
     },
 
     3: {
         "name": "Dermason",
-        "image": "static/bean3.png",
+        "image": BASE_DIR / "static" / "bean3.png",
         "description": "Frijol pequeño y ligeramente alargado."
     },
 
     4: {
         "name": "Horoz",
-        "image": "static/bean4.png",
-        "description": "Frijol denso y robusto."
+        "image": BASE_DIR / "static" / "bean4.png",
+        "description": "Frijol robusto y denso."
     },
 
     5: {
         "name": "Barbunya",
-        "image": "static/bean5.png",
-        "description": "Frijol irregular con superficie amplia."
+        "image": BASE_DIR / "static" / "bean5.png",
+        "description": "Frijol irregular y ancho."
     },
 
     6: {
         "name": "Seker",
-        "image": "static/bean6.png",
+        "image": BASE_DIR / "static" / "bean6.png",
         "description": "Frijol pequeño y compacto."
     }
 
 }
 
-# =========================================
+# ======================================================
 # HEADER
-# =========================================
-
-logo_path = Path(__file__).parent / "static" / "logo.png"
+# ======================================================
 
 st.markdown("""
 <div class="hero">
 
-<div class="hero-text">
-
 <h1>K-Beans AI</h1>
 
 <p>
-Sistema inteligente de clasificación automática
-de frijoles mediante Machine Learning y análisis PCA
+Sistema inteligente para clasificación automática
+de frijoles usando Machine Learning y análisis PCA.
 </p>
-
-</div>
 
 </div>
 """, unsafe_allow_html=True)
 
-# =========================================
+# ======================================================
 # METRICAS
-# =========================================
+# ======================================================
 
-c1, c2, c3 = st.columns(3)
+m1, m2, m3 = st.columns(3)
 
-with c1:
+with m1:
     st.metric("Clusters", "7")
 
-with c2:
+with m2:
     st.metric("Modelo", "K-Means")
 
-with c3:
+with m3:
     st.metric("Registros", len(df))
 
-# =========================================
+# ======================================================
 # TABS
-# =========================================
+# ======================================================
 
 tab1, tab2, tab3 = st.tabs([
     "Predicción",
@@ -144,37 +156,41 @@ tab1, tab2, tab3 = st.tabs([
     "Información"
 ])
 
-# =========================================
+# ======================================================
 # TAB 1
-# =========================================
+# ======================================================
 
 with tab1:
 
-    st.subheader("Características del frijol")
+    st.subheader("Características del Frijol")
 
-    col1, col2 = st.columns(2)
+    c1, c2 = st.columns(2)
 
-    with col1:
+    with c1:
 
         area = st.number_input(
             "Área",
+            min_value=1000,
             value=32000
         )
 
         perimeter = st.number_input(
             "Perímetro",
+            min_value=100,
             value=850
         )
 
         major_axis = st.number_input(
-            "Major Axis Length",
+            "MajorAxisLength",
+            min_value=50,
             value=300
         )
 
-    with col2:
+    with c2:
 
         minor_axis = st.number_input(
-            "Minor Axis Length",
+            "MinorAxisLength",
+            min_value=20,
             value=150
         )
 
@@ -185,9 +201,9 @@ with tab1:
             0.80
         )
 
-    # =====================================
-    # PREDICCION
-    # =====================================
+    # ==================================================
+    # BOTON
+    # ==================================================
 
     if st.button("Analizar Frijol"):
 
@@ -201,9 +217,11 @@ with tab1:
             compactness
         )
 
-        bean = CLUSTER_INFO[cluster]
+        bean = CLUSTER_INFO.get(cluster)
 
+        # ==============================================
         # SCORE
+        # ==============================================
 
         distance = np.min(
             kmeans.transform(scaled)
@@ -214,7 +232,9 @@ with tab1:
             100 - (distance * 10)
         )
 
-        # CARD
+        # ==============================================
+        # RESULTADO
+        # ==============================================
 
         st.markdown(f"""
         <div class="result-card">
@@ -226,14 +246,20 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
 
-        # IMAGE
+        # ==============================================
+        # IMAGEN
+        # ==============================================
 
-        st.image(
-            bean["image"],
-            width=320
-        )
+        if bean["image"].exists():
 
-        # PROGRESS
+            st.image(
+                str(bean["image"]),
+                width=320
+            )
+
+        # ==============================================
+        # SIMILITUD
+        # ==============================================
 
         st.subheader("Nivel de similitud")
 
@@ -245,9 +271,9 @@ with tab1:
             f"{similarity:.1f}% de similitud"
         )
 
-# =========================================
+# ======================================================
 # TAB 2
-# =========================================
+# ======================================================
 
 with tab2:
 
@@ -262,20 +288,29 @@ with tab2:
     labels = kmeans.labels_
 
     pca_df = pd.DataFrame({
+
         "PCA1": X_pca[:, 0],
         "PCA2": X_pca[:, 1],
         "Cluster": labels.astype(str)
+
     })
 
     fig = px.scatter(
+
         pca_df,
+
         x="PCA1",
         y="PCA2",
+
         color="Cluster",
+
         title="Distribución PCA de Frijoles",
+
         template="plotly_dark",
+
         width=1200,
         height=700
+
     )
 
     st.plotly_chart(
@@ -283,13 +318,14 @@ with tab2:
         use_container_width=True
     )
 
-# =========================================
+# ======================================================
 # TAB 3
-# =========================================
+# ======================================================
 
 with tab3:
 
     st.markdown("""
+
 ## Dataset
 
 Dry Bean Dataset
@@ -306,11 +342,6 @@ Dry Bean Dataset
 
 K-Means Clustering
 
-## Objetivo
-
-Clasificar automáticamente frijoles
-según características geométricas.
-
 ## Tecnologías
 
 - Python
@@ -318,4 +349,26 @@ según características geométricas.
 - Scikit-Learn
 - Plotly
 - PCA
+
+## Objetivo
+
+Clasificar automáticamente frijoles
+según características geométricas.
+
 """)
+
+# ======================================================
+# FOOTER
+# ======================================================
+
+st.markdown("""
+
+<br><br>
+
+<center>
+
+K-Beans AI • Machine Learning Project
+
+</center>
+
+""", unsafe_allow_html=True)
