@@ -40,39 +40,38 @@ from pathlib import Path
 import streamlit as st
 import re
 
-# HEADER
-
 from pathlib import Path
 import streamlit as st
 
-header_path = Path(__file__).parent / "templates" / "header.html"
-
-with open(header_path, "r", encoding="utf-8") as f:
-    raw_html = f.read()
-
-body_match = re.search(
-    r"<body>(.*?)</body>",
-    raw_html,
-    re.DOTALL
-)
-
-header_html = (
-    body_match.group(1).strip()
-    if body_match
-    else raw_html
-)
-
-# Mostrar layout con logo REAL de Streamlit (ESTO ES LO IMPORTANTE)
-col1, col2 = st.columns([1, 6])
-
 logo_path = Path(__file__).parent / "static" / "logo.png"
 
-with col1:
-    st.image(str(logo_path), width=120)
+st.markdown(f"""
+<div class="kb-header">
 
-with col2:
-    st.markdown(header_html, unsafe_allow_html=True)
+    <div class="kb-bg-texture"></div>
 
+    <div class="kb-header-content">
+
+        <div class="kb-title-container">
+
+            <img src="file://{logo_path}" class="kb-logo"/>
+
+            <h1 class="kb-title">
+                <span class="kb-title-k">K</span>
+                <span class="kb-title-dash">-</span>
+                <span class="kb-title-beans">Beans</span>
+            </h1>
+
+        </div>
+
+        <div class="kb-subtitle">
+            Sistema inteligente de clasificación de frijoles mediante Machine Learning y análisis geométrico.
+        </div>
+
+    </div>
+
+</div>
+""", unsafe_allow_html=True)
 
 # MODELO
 
