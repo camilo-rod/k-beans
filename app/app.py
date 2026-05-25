@@ -22,16 +22,22 @@ with open(APP_DIR / "static" / "style.css", "r", encoding="utf-8") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # HEADER
-header_col1, header_col2 = st.columns([1.2, 5])
-with header_col1:
-    st.image(str(APP_DIR / "static" / "logo.png"), width=140)
-with header_col2:
-    st.markdown("""
-    <div class="kb-header"><div class="kb-header-content">
-    <h1 class="kb-title"><span class="kb-title-k">K</span><span class="kb-title-dash">—</span><span class="kb-title-beans">Beans</span></h1>
-    <p class="kb-subtitle">Sistema inteligente para clasificación automática de frijoles usando Machine Learning y análisis geométrico.</p>
-    </div></div>
-    """, unsafe_allow_html=True)
+import base64
+with open(APP_DIR / "static" / "logo.png", "rb") as f:
+    logo_b64 = "data:image/png;base64," + base64.b64encode(f.read()).decode()
+
+st.markdown(f"""
+<div class="kb-header">
+  <div class="kb-bg-texture"></div>
+  <div class="kb-header-content" style="display:flex; align-items:center; gap:24px;">
+    <img src="{logo_b64}" width="90" style="border-radius:20px; background:white; padding:10px; box-shadow:0 8px 25px rgba(0,0,0,.15); flex-shrink:0;"/>
+    <div>
+      <h1 class="kb-title"><span class="kb-title-k">K</span><span class="kb-title-dash">—</span><span class="kb-title-beans">Beans</span></h1>
+      <p class="kb-subtitle">Agrupación inteligente de frijoles mediante K-Means y análisis de componentes principales</p>
+    </div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
 # MODELOS
 kmeans = load_model(ROOT_DIR / "models" / "kmeans_model.pkl")
