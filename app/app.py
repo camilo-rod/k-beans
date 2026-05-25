@@ -89,7 +89,7 @@ tab1, tab2, tab3 = st.tabs(["Predicción", "Análisis", "Información"])
 # TAB 1
 with tab1:
     st.markdown("""
-### 🌱 Analiza tu frijol
+### Analiza tu frijol
 Ingresa las medidas físicas del frijol que deseas clasificar.
 Puedes obtener estos valores con herramientas de análisis de imagen o medición digital.
 """)
@@ -105,12 +105,12 @@ Puedes obtener estos valores con herramientas de análisis de imagen o medición
 
     col1, col2 = st.columns(2)
     with col1:
-        area = st.slider("📐 Área (px²)", 10000, 80000, 42000, help="Superficie total del frijol")
-        perimeter = st.slider("📏 Perímetro (px)", 400, 1200, 700, help="Longitud del contorno")
-        major_axis = st.slider("↔️ MajorAxisLength (px)", 150, 500, 250, help="Eje más largo del frijol")
+        area = st.slider("Área (px²)", 10000, 80000, 42000, help="Superficie total del frijol")
+        perimeter = st.slider("Perímetro (px)", 400, 1200, 700, help="Longitud del contorno")
+        major_axis = st.slider("MajorAxisLength (px)", 150, 500, 250, help="Eje más largo del frijol")
     with col2:
-        minor_axis = st.slider("↕️ MinorAxisLength (px)", 80, 250, 150, help="Eje más corto del frijol")
-        compactness = st.slider("⭕ Compactness", 0.60, 0.95, 0.80, help="Qué tan redondo es el frijol")
+        minor_axis = st.slider("MinorAxisLength (px)", 80, 250, 150, help="Eje más corto del frijol")
+        compactness = st.slider("Compactness", 0.60, 0.95, 0.80, help="Qué tan redondo es el frijol")
 
     # BOTÓN
     if st.button("Predecir Frijol"):
