@@ -307,34 +307,43 @@ with tab1:
         )
 
 
-        # IMAGEN
+# IMAGEN
 
-        bean_images={
+bean_images={
 
-        0:"static/bean0.png",
-        1:"static/bean1.png",
-        2:"static/bean2.png",
-        3:"static/bean3.png",
-        4:"static/bean4.png",
-        5:"static/bean5.png",
-        6:"static/bean6.png"
+0: Path(__file__).parent/"static"/"bean0.png",
+1: Path(__file__).parent/"static"/"bean1.png",
+2: Path(__file__).parent/"static"/"bean2.png",
+3: Path(__file__).parent/"static"/"bean3.png",
+4: Path(__file__).parent/"static"/"bean4.png",
+5: Path(__file__).parent/"static"/"bean5.png",
+6: Path(__file__).parent/"static"/"bean6.png"
 
-        }
+}
 
-        image_path=bean_images.get(
-        cluster
+image_path=bean_images.get(cluster)
+
+if image_path and image_path.exists():
+
+    st.markdown(
+    "<h3 style='text-align:center'>Tipo de frijol detectado</h3>",
+    unsafe_allow_html=True
+    )
+
+    c1,c2,c3=st.columns([1,2,1])
+
+    with c2:
+
+        st.image(
+        str(image_path),
+        use_container_width=True
         )
 
-        if image_path and os.path.exists(
-        image_path
-        ):
+else:
 
-            st.image(
-            image_path,
-            width=280
-            )
-
-
+    st.warning(
+    "No se encontró la imagen del frijol."
+    )
 
 # TAB ANÁLISIS
 
@@ -345,14 +354,16 @@ with tab2:
     )
 
     palette=[
-    '#4A6741',
-    '#C4714A',
-    '#7A9E72',
-    '#D4B896',
-    '#6A513C',
-    '#A95D3D',
-    '#3B2A1A'
-    ]
+
+'#4CAF50',  # verde hoja
+'#FF9800',  # naranja cálido
+'#00BCD4',  # turquesa
+'#9C27B0',  # morado
+'#E91E63',  # rosado
+'#FFC107',  # amarillo
+'#795548'   # café
+
+]
 
     colors=palette[
     :kmeans.n_clusters
@@ -372,160 +383,143 @@ with tab2:
 
 
     fig,ax=plt.subplots(
-    figsize=(12,8)
-    )
+figsize=(13,8)
+)
 
-    fig.patch.set_facecolor(
-    '#FDFAF5'
-    )
+fig.patch.set_facecolor('#f8fafc')
 
-    ax.set_facecolor(
-    '#FDFAF5'
-    )
+ax.set_facecolor('#ffffff')
 
-
-    ax.grid(
-    linestyle='--',
-    alpha=.3
-    )
+ax.grid(
+linestyle='--',
+linewidth=.8,
+alpha=.2
+)
 
 
-    # CLUSTERS
+for i in range(kmeans.n_clusters):
 
-    for i in range(
-    kmeans.n_clusters
-    ):
-
-        mask=labels==i
-
-        ax.scatter(
-
-        X_pca[mask,0],
-
-        X_pca[mask,1],
-
-        c=colors[i],
-
-        alpha=.65,
-
-        s=55,
-
-        edgecolors='white',
-
-        linewidths=.5,
-
-        label=f'Cluster {i}'
-        )
-
-
-    # CENTROIDES
+    mask=labels==i
 
     ax.scatter(
 
-    centroids_pca[:,0],
-    centroids_pca[:,1],
+    X_pca[mask,0],
+    X_pca[mask,1],
 
-    s=350,
+    c=colors[i],
+    alpha=.75,
+    s=80,
 
-    marker='o',
+    edgecolors='white',
 
-    c=colors,
+    linewidths=1,
 
-    edgecolors='#2c2c2c',
+    label=f'Cluster {i}'
+    )
+
+
+ax.scatter(
+
+centroids_pca[:,0],
+centroids_pca[:,1],
+
+s=500,
+
+marker='o',
+
+c=colors,
+
+edgecolors='black',
+
+linewidths=2,
+
+zorder=5
+
+)
+
+
+for i,(cx,cy) in enumerate(
+centroids_pca
+):
+
+    ax.text(
+
+    cx,
+    cy,
+
+    str(i),
+
+    fontsize=11,
+
+    fontweight='bold',
+
+    color='white',
+
+    ha='center',
+
+    va='center'
+
+    )
+
+
+if "new_pca" in st.session_state:
+
+    point=st.session_state["new_pca"]
+
+    ax.scatter(
+
+    point[:,0],
+    point[:,1],
+
+    s=700,
+
+    marker='*',
+
+    color='#ff1744',
+
+    edgecolors='black',
 
     linewidths=2,
 
-    zorder=5
+    label='Nuevo frijol'
 
     )
 
 
-    # NUMEROS CENTROIDES
+ax.set_title(
 
-    for i,(cx,cy) in enumerate(
-    centroids_pca
-    ):
+"Mapa inteligente de clusters K-Beans",
 
-        ax.text(
+fontsize=22,
 
-        cx,
-        cy,
+fontweight='bold',
 
-        str(i),
+pad=20
 
-        fontsize=10,
+)
 
-        fontweight='bold',
+ax.set_xlabel(
+"Componente Principal 1"
+)
 
-        color='white',
+ax.set_ylabel(
+"Componente Principal 2"
+)
 
-        ha='center',
+legend=ax.legend(
+fontsize=10,
+frameon=True
+)
 
-        va='center',
+legend.get_frame().set_alpha(.95)
 
-        zorder=6
+for spine in ax.spines.values():
 
-        )
+    spine.set_visible(False)
 
+plt.tight_layout()
 
-    # NUEVO FRIJOL
-
-    if "new_pca" in st.session_state:
-
-        point=st.session_state[
-        "new_pca"
-        ]
-
-        ax.scatter(
-
-        point[:,0],
-        point[:,1],
-
-        s=500,
-
-        marker='*',
-
-        color='#C4714A',
-
-        edgecolors='black',
-
-        linewidths=1.5,
-
-        zorder=10,
-
-        label='Nuevo frijol'
-        )
-
-
-    ax.set_title(
-    "Clusters K-Means de Frijoles",
-    fontsize=18,
-    fontweight='bold',
-    pad=15
-    )
-
-    ax.set_xlabel(
-    "Componente Principal 1"
-    )
-
-    ax.set_ylabel(
-    "Componente Principal 2"
-    )
-
-    legend=ax.legend(
-    frameon=True,
-    fancybox=True,
-    shadow=True
-    )
-
-    legend.get_frame().set_alpha(.95)
-
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-
-    plt.tight_layout()
-
-    st.pyplot(fig)
+st.pyplot(fig)
 
 
 # TAB INFORMACIÓN
