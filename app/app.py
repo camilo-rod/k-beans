@@ -7,15 +7,16 @@ from pathlib import Path
 from sklearn.decomposition import PCA
 
 import sys
-import os
 
 # ======================================================
 # PATHS
 # ======================================================
 
-BASE_DIR = Path(__file__).parent.parent
+APP_DIR = Path(__file__).parent
 
-sys.path.append(str(BASE_DIR))
+ROOT_DIR = APP_DIR.parent
+
+sys.path.append(str(ROOT_DIR))
 
 # ======================================================
 # IMPORTS
@@ -38,7 +39,7 @@ st.set_page_config(
 # CSS
 # ======================================================
 
-css_path = BASE_DIR / "static" / "style.css"
+css_path = APP_DIR / "static" / "style.css"
 
 with open(css_path, "r", encoding="utf-8") as f:
     st.markdown(
@@ -51,64 +52,64 @@ with open(css_path, "r", encoding="utf-8") as f:
 # ======================================================
 
 kmeans = load_model(
-    BASE_DIR / "models" / "kmeans_model.pkl"
+    ROOT_DIR / "models" / "kmeans_model.pkl"
 )
 
 scaler = load_scaler(
-    BASE_DIR / "models" / "scaler.pkl"
+    ROOT_DIR / "models" / "scaler.pkl"
 )
 
 df = load_data(
-    BASE_DIR / "data" / "processed" / "Dry_Bean_Dataset_clean.csv"
+    ROOT_DIR / "data" / "processed" / "Dry_Bean_Dataset_clean.csv"
 )
 
 features = get_features()
 
 # ======================================================
-# INFORMACIÓN DE FRIJOLES
+# INFORMACIÓN FRIJOLES
 # ======================================================
 
 CLUSTER_INFO = {
 
     0: {
         "name": "Cali",
-        "image": BASE_DIR / "static" / "bean0.png",
+        "image": APP_DIR / "static" / "bean0.png",
         "description": "Frijol grande y claro con textura uniforme."
     },
 
     1: {
         "name": "Bombay",
-        "image": BASE_DIR / "static" / "bean1.png",
+        "image": APP_DIR / "static" / "bean1.png",
         "description": "Frijol compacto y de gran tamaño."
     },
 
     2: {
         "name": "Sira",
-        "image": BASE_DIR / "static" / "bean2.png",
+        "image": APP_DIR / "static" / "bean2.png",
         "description": "Frijol equilibrado y uniforme."
     },
 
     3: {
         "name": "Dermason",
-        "image": BASE_DIR / "static" / "bean3.png",
+        "image": APP_DIR / "static" / "bean3.png",
         "description": "Frijol pequeño y ligeramente alargado."
     },
 
     4: {
         "name": "Horoz",
-        "image": BASE_DIR / "static" / "bean4.png",
+        "image": APP_DIR / "static" / "bean4.png",
         "description": "Frijol robusto y denso."
     },
 
     5: {
         "name": "Barbunya",
-        "image": BASE_DIR / "static" / "bean5.png",
+        "image": APP_DIR / "static" / "bean5.png",
         "description": "Frijol irregular y ancho."
     },
 
     6: {
         "name": "Seker",
-        "image": BASE_DIR / "static" / "bean6.png",
+        "image": APP_DIR / "static" / "bean6.png",
         "description": "Frijol pequeño y compacto."
     }
 
@@ -124,7 +125,7 @@ st.markdown("""
 <h1>K-Beans AI</h1>
 
 <p>
-Sistema inteligente para clasificación automática
+Sistema inteligente de clasificación automática
 de frijoles usando Machine Learning y análisis PCA.
 </p>
 
@@ -132,7 +133,7 @@ de frijoles usando Machine Learning y análisis PCA.
 """, unsafe_allow_html=True)
 
 # ======================================================
-# METRICAS
+# MÉTRICAS
 # ======================================================
 
 m1, m2, m3 = st.columns(3)
@@ -202,7 +203,7 @@ with tab1:
         )
 
     # ==================================================
-    # BOTON
+    # BOTÓN
     # ==================================================
 
     if st.button("Analizar Frijol"):
@@ -220,7 +221,7 @@ with tab1:
         bean = CLUSTER_INFO.get(cluster)
 
         # ==============================================
-        # SCORE
+        # SIMILITUD
         # ==============================================
 
         distance = np.min(
@@ -258,7 +259,7 @@ with tab1:
             )
 
         # ==============================================
-        # SIMILITUD
+        # BARRA
         # ==============================================
 
         st.subheader("Nivel de similitud")
