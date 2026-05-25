@@ -50,12 +50,26 @@ with open(css_path, "r", encoding="utf-8") as f:
 
 logo_path = APP_DIR / "static" / "logo.png"
 
-col1, col2 = st.columns([1, 6])
+header_col1, header_col2 = st.columns([1.2, 5])
 
-with col1:
-    st.image(str(logo_path), width=120)
+with header_col1:
 
-with col2:
+    st.markdown(
+        '<div class="logo-container">',
+        unsafe_allow_html=True
+    )
+
+    st.image(
+        str(logo_path),
+        width=140
+    )
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+with header_col2:
 
     st.markdown("""
     <div class="kb-header">
