@@ -59,17 +59,25 @@ X_pca = pca.fit_transform(X_scaled)
 labels = kmeans.labels_
 
 # MAPEO
-CLUSTER_NAMES = {0: "Cali", 1: "Bombay", 2: "Sira", 3: "Dermason", 4: "Horoz", 5: "Barbunya", 6: "Seker"}
+CLUSTER_NAMES = {
+    0: "Seker",
+    1: "Barbunya",
+    2: "Bombay",
+    3: "Sira",
+    4: "Dermason",
+    5: "Cali",
+    6: "Horoz"
+}
 
 # DESCRIPCIONES
 BEAN_DESCRIPTIONS = {
-    "Cali": "Frijol grande y claro con textura uniforme.",
+    "Seker": "Frijol pequeño y compacto con forma redondeada.",
+    "Barbunya": "Frijol irregular y ancho con manchas características.",
     "Bombay": "Frijol robusto y compacto de gran tamaño.",
-    "Sira": "Frijol equilibrado y uniforme.",
+    "Sira": "Frijol equilibrado y uniforme de tamaño medio.",
     "Dermason": "Frijol pequeño y ligeramente alargado.",
-    "Horoz": "Frijol denso con estructura fuerte.",
-    "Barbunya": "Frijol irregular y ancho.",
-    "Seker": "Frijol pequeño y compacto."
+    "Cali": "Frijol grande y claro con textura uniforme.",
+    "Horoz": "Frijol denso con estructura alargada y fuerte."
 }
 
 # IMAGENES
