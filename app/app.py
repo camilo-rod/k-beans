@@ -109,49 +109,49 @@ with tab1:
 Ingresa las medidas físicas del frijol para que el modelo pueda identificar su tipo usando el Dry Bean Dataset.
 """)
 
-    st.info("""
-<div style="display: flex; gap: 50px;">
+    col1, col2 = st.columns(2)
 
-<div style="flex: 1;">
+    with col1:
+        st.markdown("""
+#### Área (Area)
+Tamaño total del frijol.
 
-### Área (Area)
-- Tamaño total del frijol
 - Normal: 10 000 – 200 000
 - Valores altos = frijoles grandes
 
-### Perímetro (Perimeter)
-- Longitud total del borde
-- Normal: 400 – 1 700
-- Alto = frijol grande o irregular
+#### Perímetro (Perimeter)
+Longitud total del borde.
 
-### Largo principal (MajorAxisLength)
-- Distancia más larga del frijol
+- Normal: 400 – 1 700
+- Aumenta en frijoles grandes o irregulares
+
+#### Largo principal (MajorAxisLength)
+Distancia más larga del frijol.
+
 - Normal: 150 – 650
 - Alto = frijol más alargado
+""")
 
-</div>
+    with col2:
+        st.markdown("""
+#### Largo secundario (MinorAxisLength)
+Ancho del frijol.
 
-<div style="flex: 1;">
-
-### Largo secundario (MinorAxisLength)
-- Ancho del frijol
 - Normal: 80 – 400
 - Alto = frijol más grueso
 
-### Compactación (Compactness)
-- Qué tan redondo es el frijol
+#### Compactación (Compactness)
+Qué tan redondo es el frijol.
+
 - Normal: 0.60 – 0.95
 - Cerca de 1.0 = más redondo
+- Bajo = más alargado
 
-### Recomendaciones
+#### Recomendaciones
 - Ingresa valores reales
 - Respeta los rangos sugeridos
 - Verifica los datos antes de clasificar
-
-</div>
-
-</div>
-""", unsafe_allow_html=True)
+""")
 
     col1, col2 = st.columns(2)
     with col1:
