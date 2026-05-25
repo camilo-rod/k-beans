@@ -107,56 +107,51 @@ with tab1:
     st.markdown("""
 ### Analiza tu frijol
 
-En esta sección debes ingresar las medidas físicas del frijol que deseas identificar.  
-El sistema comparará esos datos con muestras del Dry Bean Dataset para predecir el tipo de frijol.
-
-Las medidas deben ser ingresadas manualmente según los datos obtenidos previamente en archivos, mediciones o herramientas de análisis.
+Ingresa las medidas físicas del frijol para que el modelo pueda identificar su tipo usando el Dry Bean Dataset.
 """)
 
-    st.info("""
-## Guía para ingresar los datos del frijol
+    col1, col2 = st.columns(2)
 
-**1. Área (Area)**  
-Es el tamaño total del frijol.
+    with col1:
+        st.markdown("""
+#### Área (Area)
+Tamaño total del frijol.
 
-- Representa el espacio que ocupa el frijol.
-- Valores normales: entre 10 000 y 200 000.
-- Un frijol grande tendrá un área mayor.
+- Normal: 10 000 – 200 000
+- Valores altos = frijoles grandes
 
-**2. Perímetro (Perimeter)**  
-Es la longitud total del borde del frijol.
+#### Perímetro (Perimeter)
+Longitud total del borde.
 
-- Valores normales: entre 400 y 1 700.
-- Un frijol más grande o irregular tendrá un perímetro mayor.
+- Normal: 400 – 1 700
+- Aumenta en frijoles grandes o irregulares
 
-**3. Largo principal (MajorAxisLength)**  
-Es la distancia más larga del frijol.
+#### Largo principal (MajorAxisLength)
+Distancia más larga del frijol.
 
-- Representa el eje principal.
-- Valores normales: entre 150 y 650.
-- Los frijoles alargados tienen valores más altos.
+- Normal: 150 – 650
+- Alto = frijol más alargado
+""")
 
-**4. Largo secundario (MinorAxisLength)**  
-Es el ancho del frijol.
+    with col2:
+        st.markdown("""
+#### Largo secundario (MinorAxisLength)
+Ancho del frijol.
 
-- Representa el eje menor.
-- Valores normales: entre 80 y 400.
-- Los frijoles más gruesos tienen valores mayores.
+- Normal: 80 – 400
+- Alto = frijol más grueso
 
-**5. Compactación (Compactness)**  
-Indica qué tan redondo o compacto es el frijol.
+#### Compactación (Compactness)
+Qué tan redondo es el frijol.
 
-- Valores normales: entre 0.60 y 0.95.
-- Valores cercanos a 1.0 indican un frijol más redondo.
-- Valores bajos indican un frijol más alargado.
+- Normal: 0.60 – 0.95
+- Cerca de 1.0 = más redondo
+- Bajo = más alargado
 
-## Recomendaciones
-
-- Ingresa los valores correctamente.
-- Verifica que las medidas estén dentro de los rangos recomendados.
-- Usa datos reales obtenidos previamente para mejorar la precisión.
-
-El modelo funciona mejor cuando los datos son precisos.
+#### Recomendaciones
+- Ingresa valores reales
+- Respeta los rangos sugeridos
+- Verifica los datos antes de clasificar
 """)
 
     col1, col2 = st.columns(2)
