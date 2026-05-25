@@ -102,7 +102,6 @@ st.markdown("K-Beans utiliza Machine Learning para detectar patrones geométrico
 # TABS
 tab1, tab2, tab3 = st.tabs(["Predicción", "Análisis", "Información"])
 
-# TAB 1
 with tab1:
     st.markdown("""
 ### Analiza tu frijol
@@ -110,49 +109,49 @@ with tab1:
 Ingresa las medidas físicas del frijol para que el modelo pueda identificar su tipo usando el Dry Bean Dataset.
 """)
 
-    col1, col2 = st.columns(2)
+    st.info("""
+<div style="display: flex; gap: 50px;">
 
-    with col1:
-        st.markdown("""
-#### Área (Area)
-Tamaño total del frijol.
+<div style="flex: 1;">
 
+### Área (Area)
+- Tamaño total del frijol
 - Normal: 10 000 – 200 000
 - Valores altos = frijoles grandes
 
-#### Perímetro (Perimeter)
-Longitud total del borde.
-
+### Perímetro (Perimeter)
+- Longitud total del borde
 - Normal: 400 – 1 700
-- Aumenta en frijoles grandes o irregulares
+- Alto = frijol grande o irregular
 
-#### Largo principal (MajorAxisLength)
-Distancia más larga del frijol.
-
+### Largo principal (MajorAxisLength)
+- Distancia más larga del frijol
 - Normal: 150 – 650
 - Alto = frijol más alargado
-""")
 
-    with col2:
-        st.markdown("""
-#### Largo secundario (MinorAxisLength)
-Ancho del frijol.
+</div>
 
+<div style="flex: 1;">
+
+### Largo secundario (MinorAxisLength)
+- Ancho del frijol
 - Normal: 80 – 400
 - Alto = frijol más grueso
 
-#### Compactación (Compactness)
-Qué tan redondo es el frijol.
-
+### Compactación (Compactness)
+- Qué tan redondo es el frijol
 - Normal: 0.60 – 0.95
 - Cerca de 1.0 = más redondo
-- Bajo = más alargado
 
-#### Recomendaciones
+### Recomendaciones
 - Ingresa valores reales
 - Respeta los rangos sugeridos
 - Verifica los datos antes de clasificar
-""")
+
+</div>
+
+</div>
+""", unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
     with col1:
