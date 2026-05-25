@@ -123,15 +123,11 @@ Es el tamaño total del frijol.
 - Valores normales: entre 10 000 y 200 000.
 - Un frijol grande tendrá un área mayor.
 
----
-
 **2. Perímetro (Perimeter)**  
 Es la longitud total del borde del frijol.
 
 - Valores normales: entre 400 y 1 700.
 - Un frijol más grande o irregular tendrá un perímetro mayor.
-
----
 
 **3. Largo principal (MajorAxisLength)**  
 Es la distancia más larga del frijol.
@@ -140,8 +136,6 @@ Es la distancia más larga del frijol.
 - Valores normales: entre 150 y 650.
 - Los frijoles alargados tienen valores más altos.
 
----
-
 **4. Largo secundario (MinorAxisLength)**  
 Es el ancho del frijol.
 
@@ -149,16 +143,12 @@ Es el ancho del frijol.
 - Valores normales: entre 80 y 400.
 - Los frijoles más gruesos tienen valores mayores.
 
----
-
 **5. Compactación (Compactness)**  
 Indica qué tan redondo o compacto es el frijol.
 
 - Valores normales: entre 0.60 y 0.95.
 - Valores cercanos a 1.0 indican un frijol más redondo.
 - Valores bajos indican un frijol más alargado.
-
----
 
 ## Recomendaciones
 
