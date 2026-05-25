@@ -630,3 +630,162 @@ background:var(--tan);
 border-radius:20px;
 
 }
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.logo-container{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+background:white;
+
+border-radius:25px;
+
+padding:20px;
+
+margin-top:25px;
+
+box-shadow:
+0 10px 30px rgba(0,0,0,.08);
+
+height:220px;
+
+}
+
+
+/* =====================================================
+   HEADER MEJORADO
+===================================================== */
+
+.kb-header{
+
+position:relative;
+
+overflow:hidden;
+
+padding:
+
+3rem
+3rem
+2.5rem
+3rem;
+
+margin:
+0
+0
+3rem
+0;
+
+border-radius:30px;
+
+border-bottom:
+
+4px solid
+var(--clay);
+
+background:
+
+linear-gradient(
+135deg,
+#2f2215,
+#4A6741,
+#5C3D20
+);
+
+box-shadow:
+var(--shadow-lg);
+
+}
+
+
+/* =====================================================
+   TITULO
+===================================================== */
+
+.kb-title{
+
+font-family:
+'Playfair Display',
+serif!important;
+
+font-size:
+
+clamp(
+2.8rem,
+7vw,
+5rem
+)!important;
+
+font-weight:900!important;
+
+line-height:1!important;
+
+margin:0!important;
+
+color:white!important;
+
+letter-spacing:-3px;
+
+}
+
+
+/* =====================================================
+   SUBTITULO
+===================================================== */
+
+.kb-subtitle{
+
+font-size:1.1rem;
+
+line-height:1.8;
+
+max-width:650px;
+
+color:#F5F0E8!important;
+
+margin-top:15px;
+
+}
+
+
+/* =====================================================
+   RESULTADO FRIJOL
+===================================================== */
+
+.bean-card{
+
+background:white;
+
+padding:30px;
+
+border-radius:25px;
+
+box-shadow:
+0 10px 25px rgba(0,0,0,.08);
+
+border:
+1px solid var(--border);
+
+margin-top:20px;
+
+}
+
+
+/* =====================================================
+   IMAGEN FRIJOL
+===================================================== */
+
+.bean-image img{
+
+border-radius:20px;
+
+box-shadow:
+0 10px 25px rgba(0,0,0,.10);
+
+}
