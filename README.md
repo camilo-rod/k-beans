@@ -39,12 +39,8 @@ Muchos proyectos académicos de clustering se quedan en el notebook. Lo que frec
 - **Pruebas con usuarios reales:** la mayoría de los proyectos no validan si la interfaz es comprensible para alguien del dominio agrícola.
 
 ## Falencias en el desarrollo
-Siendo honestos, el proyecto tuvo varias limitaciones que vale la pena nombrar:
-
+El proyecto tuvo varias limitaciones a la hora de su desarrollo como:
 - **Primer proyecto colaborativo en GitHub:** al no estar familiarizados con el flujo de ramas, durante las primeras semanas trabajamos directamente sobre `main`, lo que generó conflictos de merge que tuvimos que resolver manualmente y con pérdida de algunos cambios intermedios. Hacia el final adoptamos un flujo más ordenado con ramas por feature.
-- **Número de clusters elegido sin suficiente respaldo:** elegimos K=4 basándonos principalmente en el método del codo de forma visual, sin complementarlo con otras métricas. Un análisis más riguroso pudo haber justificado mejor esa decisión.
-- **Features limitadas:** usamos solo 5 variables del dataset original, que tiene 16. No exploramos si incluir más features mejoraba la separación de clusters, en parte por tiempo y en parte por querer mantener la interfaz simple.
-- **Sin pipeline de reentrenamiento:** el modelo está serializado como un archivo `.pkl` estático. Si el dataset cambia o se quiere mejorar el modelo, hay que hacerlo manualmente desde el notebook, lo que no escala bien.
 - **Interfaz funcional pero sin pruebas de usabilidad:** la app cumple su función, pero no fue probada con personas ajenas al proyecto, por lo que no sabemos qué tan intuitiva resulta para un usuario del contexto agrícola.
 
 ## Algoritmo utilizado
