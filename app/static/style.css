@@ -1,622 +1,174 @@
-/* =============================================
-   K-BEANS — Premium Organic UI
-============================================= */
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;700&display=swap');
-
-
-/* =====================================================
-   VARIABLES
-===================================================== */
-
-:root{
-
---cream:#F5F0E8;
---earth:#3B2A1A;
---moss:#4A6741;
---sage:#7A9E72;
---clay:#C4714A;
---tan:#D4B896;
---light:#FDFAF5;
---border:#E5D7C8;
-
---shadow-sm:
-0 3px 10px rgba(59,42,26,.05);
-
---shadow-md:
-0 10px 30px rgba(59,42,26,.08);
-
---shadow-lg:
-0 20px 50px rgba(59,42,26,.12);
-
+/* VARIABLES */
+:root {
+  --moss:      #4A6741;
+  --sage:      #7A9E72;
+  --clay:      #C4714A;
+  --cream:     #F5F0E8;
+  --tan:       #D4B896;
+  --border:    rgba(0,0,0,.08);
+  --light:     #FAFAFA;
+  --shadow-sm: 0 4px 12px rgba(0,0,0,.06);
+  --shadow-md: 0 12px 30px rgba(0,0,0,.12);
 }
 
-/* =====================================================
-   BASE
-===================================================== */
+/* OCULTAR STREAMLIT */
+#MainMenu, footer, header[data-testid="stHeader"] { visibility: hidden !important; height: 0 !important; }
+[data-testid="stDecoration"] { display: none !important; }
 
-html,
-body,
-[data-testid="stAppViewContainer"]{
+/* CONTENEDOR */
+[data-testid="stMain"] > div { padding-top: 0 !important; }
+.block-container { max-width: 1250px !important; padding: 1rem 2rem 3rem 2rem !important; }
 
-background:var(--light)!important;
+/* COLUMNAS */
+[data-testid="column"] { display: flex; flex-direction: column; justify-content: center; }
 
-font-family:
-'DM Sans',
-sans-serif!important;
+/* LOGO */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  border-radius: 28px;
+  padding: 25px;
+  height: 100%;
+  min-height: 240px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.05);
+}
+.logo-container img { object-fit: contain; max-width: 100%; }
 
-color:var(--earth)!important;
+/* HERO HEADER */
+.kb-header {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: 240px;
+  padding: 2.8rem 3rem;
+  margin: 25px 0 35px 0;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #2f2215, #4A6741, #5C3D20);
+  box-shadow: 0 15px 40px rgba(0,0,0,.12);
+}
+.kb-bg-texture {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(196,113,74,.2), transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(122,158,114,.18), transparent 35%),
+    radial-gradient(circle at 60% 80%, rgba(212,184,150,.15), transparent 30%);
+}
+.kb-header-content { position: relative; z-index: 2; width: 100%; }
 
-scroll-behavior:smooth;
+/* TITULO */
+.kb-title {
+  font-family: 'Playfair Display', serif !important;
+  font-size: clamp(3rem, 6vw, 5rem) !important;
+  font-weight: 900 !important;
+  line-height: 1.05 !important;
+  margin: 0 !important;
+  letter-spacing: -2px;
+  color: white !important;
+}
+.kb-title-k    { color: #C4714A; }
+.kb-title-dash { color: #D4B896; opacity: .7; }
+.kb-title-beans { color: white; }
 
+/* SUBTITLE */
+.kb-subtitle {
+  margin-top: 18px;
+  font-size: 1.08rem;
+  line-height: 1.8;
+  max-width: 700px;
+  color: #F5F0E8 !important;
+  opacity: .95;
 }
 
-[data-testid="stApp"]{
-
-background:var(--light)!important;
-
+/* TARJETAS */
+.kb-card, .bean-card {
+  background: white;
+  padding: 30px;
+  border-radius: 25px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 25px rgba(0,0,0,.06);
+  margin-top: 20px;
 }
 
+/* MÉTRICAS */
+div[data-testid="stMetric"] {
+  background: white;
+  padding: 25px !important;
+  border-radius: 24px !important;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: .3s;
+}
+div[data-testid="stMetric"]:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
 
-/* =====================================================
-   OCULTAR STREAMLIT
-===================================================== */
-
-#MainMenu,
-footer,
-header[data-testid="stHeader"]{
-
-visibility:hidden!important;
-height:0!important;
-
+/* BOTONES */
+[data-testid="stButton"] button {
+  width: 100%;
+  height: 60px;
+  border: none !important;
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, var(--moss), var(--sage)) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: white !important;
+  letter-spacing: .05em;
+  box-shadow: 0 8px 20px rgba(74,103,65,.25);
+  transition: .3s;
+}
+[data-testid="stButton"] button:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, var(--clay), #d88f5c) !important;
 }
 
-[data-testid="stDecoration"]{
+/* INPUTS */
+[data-testid="stSlider"]      { padding-top: 10px; }
+[data-testid="stNumberInput"] { padding-top: 10px; }
 
-display:none!important;
+/* TABS */
+button[data-baseweb="tab"] {
+  background: white !important;
+  border-radius: 15px !important;
+  border: 1px solid var(--border) !important;
+  margin-right: 10px;
+  height: 55px;
+  padding: 0 28px !important;
+  font-weight: 600 !important;
+  transition: .3s;
+}
+button[data-baseweb="tab"]:hover { background: var(--cream) !important; }
+button[aria-selected="true"]     { background: var(--moss) !important; color: white !important; }
 
+/* ALERTAS */
+[data-testid="stAlert"] { border-radius: 18px !important; border-left-width: 5px !important; }
+
+/* GRÁFICOS */
+.stPlotlyChart {
+  background: white;
+  padding: 20px;
+  border-radius: 25px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
-
-/* =====================================================
-   CONTENEDOR
-===================================================== */
-
-[data-testid="stMain"] > div{
-
-padding-top:0!important;
-
-}
-
-.block-container{
-
-max-width:1250px!important;
-
-padding:
-1rem
-2rem
-3rem
-2rem!important;
-
-}
-
-
-/* =====================================================
-   COLUMNAS
-===================================================== */
-
-[data-testid="column"]{
-
-display:flex;
-flex-direction:column;
-justify-content:center;
-
-}
-
-
-/* =====================================================
-   LOGO
-===================================================== */
-
-.logo-container{
-
-display:flex;
-
-justify-content:center;
-align-items:center;
-
-background:white;
-
-border-radius:28px;
-
-padding:25px;
-
-height:100%;
-
-min-height:240px;
-
-box-shadow:
-0 8px 25px rgba(0,0,0,.08);
-
-border:
-1px solid rgba(0,0,0,.05);
-
-}
-
-
-/* =====================================================
-   LOGO IMAGE
-===================================================== */
-
-.logo-container img{
-
-object-fit:contain;
-
-max-width:100%;
-
-}
-
-
-/* =====================================================
-   HERO HEADER
-===================================================== */
-
-.kb-header{
-
-position:relative;
-
-overflow:hidden;
-
-display:flex;
-
-align-items:center;
-
-min-height:240px;
-
-padding:
-
-2.8rem
-3rem;
-
-margin:
-25px
-0
-35px
-0;
-
-border-radius:28px;
-
-background:
-
-linear-gradient(
-135deg,
-#2f2215,
-#4A6741,
-#5C3D20
-);
-
-box-shadow:
-0 15px 40px rgba(0,0,0,.12);
-
-}
-
-
-/* =====================================================
-   TEXTURA
-===================================================== */
-
-.kb-bg-texture{
-
-position:absolute;
-
-inset:0;
-
-background-image:
-
-radial-gradient(
-circle at 20% 30%,
-rgba(196,113,74,.2),
-transparent 40%
-),
-
-radial-gradient(
-circle at 85% 25%,
-rgba(122,158,114,.18),
-transparent 35%
-),
-
-radial-gradient(
-circle at 60% 80%,
-rgba(212,184,150,.15),
-transparent 30%
-);
-
-}
-
-
-/* =====================================================
-   HEADER CONTENT
-===================================================== */
-
-.kb-header-content{
-
-position:relative;
-
-z-index:2;
-
-width:100%;
-
-}
-
-
-/* =====================================================
-   TITULO
-===================================================== */
-
-.kb-title{
-
-font-family:
-'Playfair Display',
-serif!important;
-
-font-size:
-
-clamp(
-3rem,
-6vw,
-5rem
-)!important;
-
-font-weight:900!important;
-
-line-height:1.05!important;
-
-margin:0!important;
-
-letter-spacing:-2px;
-
-color:white!important;
-
-}
-
-
-/* =====================================================
-   COLORES TITULO
-===================================================== */
-
-.kb-title-k{
-
-color:#C4714A;
-
-}
-
-.kb-title-dash{
-
-color:#D4B896;
-
-opacity:.7;
-
-}
-
-.kb-title-beans{
-
-color:white;
-
-}
-
-
-/* =====================================================
-   SUBTITLE
-===================================================== */
-
-.kb-subtitle{
-
-margin-top:18px;
-
-font-size:1.08rem;
-
-line-height:1.8;
-
-max-width:700px;
-
-color:#F5F0E8!important;
-
-opacity:.95;
-
-}
-
-
-/* =====================================================
-   TARJETAS
-===================================================== */
-
-.kb-card,
-.bean-card{
-
-background:white;
-
-padding:30px;
-
-border-radius:25px;
-
-border:
-1px solid var(--border);
-
-box-shadow:
-0 10px 25px rgba(0,0,0,.06);
-
-margin-top:20px;
-
-}
-
-
-/* =====================================================
-   METRICAS
-===================================================== */
-
-div[data-testid="stMetric"]{
-
-background:white;
-
-padding:25px!important;
-
-border-radius:24px!important;
-
-border:
-1px solid var(--border);
-
-box-shadow:var(--shadow-sm);
-
-transition:.3s;
-
-}
-
-div[data-testid="stMetric"]:hover{
-
-transform:translateY(-4px);
-
-box-shadow:var(--shadow-md);
-
-}
-
-
-/* =====================================================
-   BOTONES
-===================================================== */
-
-[data-testid="stButton"] button{
-
-width:100%;
-
-height:60px;
-
-border:none!important;
-
-border-radius:18px!important;
-
-background:
-
-linear-gradient(
-135deg,
-var(--moss),
-var(--sage)
-)!important;
-
-font-size:16px!important;
-
-font-weight:700!important;
-
-color:white!important;
-
-letter-spacing:.05em;
-
-box-shadow:
-
-0 8px 20px rgba(
-74,
-103,
-65,
-.25
-);
-
-transition:.3s;
-
-}
-
-[data-testid="stButton"] button:hover{
-
-transform:
-translateY(-3px);
-
-background:
-
-linear-gradient(
-135deg,
-var(--clay),
-#d88f5c
-)!important;
-
-}
-
-
-/* =====================================================
-   INPUTS
-===================================================== */
-
-[data-testid="stSlider"]{
-
-padding-top:10px;
-
-}
-
-[data-testid="stNumberInput"]{
-
-padding-top:10px;
-
-}
-
-
-/* =====================================================
-   TABS
-===================================================== */
-
-button[data-baseweb="tab"]{
-
-background:white!important;
-
-border-radius:15px!important;
-
-border:
-1px solid var(--border)!important;
-
-margin-right:10px;
-
-height:55px;
-
-padding:
-0
-28px!important;
-
-font-weight:600!important;
-
-transition:.3s;
-
-}
-
-button[data-baseweb="tab"]:hover{
-
-background:var(--cream)!important;
-
-}
-
-button[aria-selected="true"]{
-
-background:var(--moss)!important;
-
-color:white!important;
-
-}
-
-
-/* =====================================================
-   ALERTAS
-===================================================== */
-
-[data-testid="stAlert"]{
-
-border-radius:18px!important;
-
-border-left-width:5px!important;
-
-}
-
-
-/* =====================================================
-   GRAFICOS
-===================================================== */
-
-.stPlotlyChart{
-
-background:white;
-
-padding:20px;
-
-border-radius:25px;
-
-border:
-1px solid var(--border);
-
-box-shadow:var(--shadow-sm);
-
-}
-
-
-/* =====================================================
-   IMAGENES
-===================================================== */
-
-.stImage img{
-
-border-radius:22px;
-
-box-shadow:
-0 10px 25px rgba(0,0,0,.10);
-
-}
-
-
-/* =====================================================
-   EXPANDER
-===================================================== */
-
-.streamlit-expanderHeader{
-
-font-weight:700!important;
-
-font-family:'DM Sans'!important;
-
-}
-
-
-/* =====================================================
-   SCROLL
-===================================================== */
-
-::-webkit-scrollbar{
-
-width:8px;
-
-}
-
-::-webkit-scrollbar-track{
-
-background:var(--light);
-
-}
-
-::-webkit-scrollbar-thumb{
-
-background:var(--tan);
-
-border-radius:20px;
-
-}
-
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media(max-width:900px){
-
-.kb-header{
-
-min-height:auto;
-
-padding:2rem;
-
-}
-
-.logo-container{
-
-min-height:180px;
-
-}
-
-.kb-title{
-
-font-size:3rem!important;
-
-}
-
-.block-container{
-
-padding:
-1rem
-1rem
-3rem
-1rem!important;
-
-}
-
+/* IMÁGENES */
+.stImage img { border-radius: 22px; box-shadow: 0 10px 25px rgba(0,0,0,.10); }
+
+/* EXPANDER */
+.streamlit-expanderHeader { font-weight: 700 !important; font-family: 'DM Sans' !important; }
+
+/* SCROLL */
+::-webkit-scrollbar       { width: 8px; }
+::-webkit-scrollbar-track { background: var(--light); }
+::-webkit-scrollbar-thumb { background: var(--tan); border-radius: 20px; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .kb-header      { min-height: auto; padding: 2rem; }
+  .logo-container { min-height: 180px; }
+  .kb-title       { font-size: 3rem !important; }
+  .block-container { padding: 1rem 1rem 3rem 1rem !important; }
 }
