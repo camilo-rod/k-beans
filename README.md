@@ -97,7 +97,7 @@ k-beans/
 │   ├── raw/             # Dataset original
 │   └── processed/       # Dataset limpio
 ├── docs/
-│   ├── presentacion.pdf/             # Presentacion final
+│   └── presentacion.pdf/             # Presentacion final
 ├── models/
 │   ├── kmeans_model.pkl # Modelo entrenado
 │   └── scaler.pkl       # Scaler serializado
