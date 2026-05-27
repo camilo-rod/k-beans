@@ -12,7 +12,7 @@ sys.path.append(str(APP_DIR))   # para config y ui/
 from config import APP_DIR, ROOT_DIR  # ahora sí funciona
 from src.preprocessing import load_data, get_features
 from src.predict import load_model, load_scaler
-from ui import header, dashboard, tab_prediccion, tab_analisis, tab_info
+from UI import header, dashboard, tab_prediccion, tab_analisis, tab_info
 
 # CONFIG
 st.set_page_config(page_title="K-Beans", page_icon="🌱", layout="wide")
