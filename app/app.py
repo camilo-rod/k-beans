@@ -1,10 +1,15 @@
 import streamlit as st
 import sys
+from pathlib import Path
 from sklearn.decomposition import PCA
 
-from config import APP_DIR, ROOT_DIR
-sys.path.append(str(ROOT_DIR))
+APP_DIR = Path(__file__).parent
+ROOT_DIR = APP_DIR.parent
 
+sys.path.append(str(ROOT_DIR))  # para src/
+sys.path.append(str(APP_DIR))   # para config y ui/
+
+from config import APP_DIR, ROOT_DIR  # ahora sí funciona
 from src.preprocessing import load_data, get_features
 from src.predict import load_model, load_scaler
 from ui import header, dashboard, tab_prediccion, tab_analisis, tab_info
