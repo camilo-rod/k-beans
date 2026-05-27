@@ -11,6 +11,10 @@
   --shadow-md: 0 12px 30px rgba(0,0,0,.12);
 }
 
+/* FONDO */
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"] { background-color: #F5F0E8 !important; }
+
 /* OCULTAR STREAMLIT */
 #MainMenu, footer, header[data-testid="stHeader"] { visibility: hidden !important; height: 0 !important; }
 [data-testid="stDecoration"] { display: none !important; }
@@ -167,8 +171,8 @@ button[aria-selected="true"]     { background: var(--moss) !important; color: wh
 
 /* RESPONSIVE */
 @media (max-width: 900px) {
-  .kb-header      { min-height: auto; padding: 2rem; }
-  .logo-container { min-height: 180px; }
-  .kb-title       { font-size: 3rem !important; }
+  .kb-header       { min-height: auto; padding: 2rem; }
+  .logo-container  { min-height: 180px; }
+  .kb-title        { font-size: 3rem !important; }
   .block-container { padding: 1rem 1rem 3rem 1rem !important; }
 }
