@@ -2,7 +2,7 @@ import streamlit as st
 import sys
 from sklearn.decomposition import PCA
 
-from app.config import APP_DIR, ROOT_DIR
+from config import APP_DIR, ROOT_DIR
 sys.path.append(str(ROOT_DIR))
 
 from src.preprocessing import load_data, get_features
