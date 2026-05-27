@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-from config import APP_DIR, ROOT_DIR
+from config import PALETTE
 
 
 def render(kmeans, X_pca):

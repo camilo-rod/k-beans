@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 
 from src.predict import predict_cluster
-from config import APP_DIR, ROOT_DIR
+from config import CLUSTER_NAMES, BEAN_DESCRIPTIONS, BEAN_IMAGES, SLIDER_CONFIG
 
 def render(kmeans, scaler, pca):
     """Renderiza el tab de predicción."""
