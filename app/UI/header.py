@@ -1,6 +1,6 @@
 import base64
 import streamlit as st
-from app.config import APP_DIR
+from config import APP_DIR, ROOT_DIR
 
 
 def render():

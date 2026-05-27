@@ -7,7 +7,7 @@ sys.path.append(str(ROOT_DIR))
 
 from src.preprocessing import load_data, get_features
 from src.predict import load_model, load_scaler
-from app.ui import header, dashboard, tab_prediccion, tab_analisis, tab_info
+from ui import header, dashboard, tab_prediccion, tab_analisis, tab_info
 
 # CONFIG
 st.set_page_config(page_title="K-Beans", page_icon="🌱", layout="wide")
