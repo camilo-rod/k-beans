@@ -314,23 +314,7 @@ def render(kmeans, scaler, pca, X_pca):
 
         st.markdown("")
 
-        # Botón principal
-        if st.button("Predecir frijol", use_container_width=True, type="primary"):
-            _mostrar_resultado(
-                kmeans, scaler, pca, X_pca,
-                feats["Area"], feats["Perimeter"],
-                feats["MajorAxisLength"], feats["MinorAxisLength"],
-                feats["Compactness"],
-            )
-        elif "resultado" in st.session_state:
-            res = st.session_state["resultado"]
-            _mostrar_resultado(kmeans, scaler, pca, X_pca,
-                               res["area"], res["perimeter"],
-                               res["major_axis"], res["minor_axis"],
-                               res["compactness"])
-
-        # Toggle ajuste manual
-        st.markdown("---")
+        # Toggle ajuste manual — visible ANTES de predecir
         ajuste_manual = st.toggle("Ajustar valores manualmente", value=False,
                                   help="Modifica las medidas antes de predecir")
         if ajuste_manual:
@@ -341,9 +325,24 @@ def render(kmeans, scaler, pca, X_pca):
                 float(feats["Compactness"]),
             )
             st.markdown("")
-            if st.button("Predecir con valores ajustados", use_container_width=True):
+            if st.button("Predecir con valores ajustados", use_container_width=True, type="primary"):
                 _mostrar_resultado(kmeans, scaler, pca, X_pca,
                                    area, perimeter, major_axis, minor_axis, compactness)
+        else:
+            # Botón principal
+            if st.button("Predecir frijol", use_container_width=True, type="primary"):
+                _mostrar_resultado(
+                    kmeans, scaler, pca, X_pca,
+                    feats["Area"], feats["Perimeter"],
+                    feats["MajorAxisLength"], feats["MinorAxisLength"],
+                    feats["Compactness"],
+                )
+            elif "resultado" in st.session_state:
+                res = st.session_state["resultado"]
+                _mostrar_resultado(kmeans, scaler, pca, X_pca,
+                                   res["area"], res["perimeter"],
+                                   res["major_axis"], res["minor_axis"],
+                                   res["compactness"])
 
     else:
         # Rama manual
