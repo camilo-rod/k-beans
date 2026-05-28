@@ -11,6 +11,5 @@ def render(kmeans, df):
     c3.metric("Registros", len(df))
 
     st.markdown(
-        "K-Beans utiliza Machine Learning para detectar patrones geométricos "
-        "y clasificar frijoles según sus características físicas."
+        "K-Beans utiliza K-Means para detectar patrones geométricos y clasificar frijoles según sus características físicas."
     )
