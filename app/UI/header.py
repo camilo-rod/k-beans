@@ -20,7 +20,7 @@ def render():
     <div class="kb-header">
       <div class="kb-bg-texture"></div>
       <div class="kb-header-content" style="display:flex; align-items:center; gap:24px;">
-        <img src="{logo_b64}" width="90" style="border-radius:20px; background:white; padding:10px; box-shadow:0 8px 25px rgba(0,0,0,.15); flex-shrink:0;"/>
+        <img src="{logo_b64}" width="100" style="border-radius:50%; background:transparent; padding:0; flex-shrink:0; filter: drop-shadow(0 6px 18px rgba(0,0,0,.35));"/>
         <div>
           <h1 class="kb-title">
             <span class="kb-title-k">K</span><span class="kb-title-dash">—</span><span class="kb-title-beans">Beans</span>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0d0d; font-family: 'DM Sans','Segoe UI',sans-serif; overflow: hidden; }
+
+  #cam-wrapper {
+    position: relative;
+    width: 100vw; height: 100vh;
+    background: #111;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  #video {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center center;
+    display: block;
+  }
+  #canvas { display: none; }
+
+  #cam-top {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 14px 20px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+    display: flex; align-items: center; gap: 10px; z-index: 10;
+  }
+  #cam-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #ff4444;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:0.3; transform:scale(0.65); }
+  }
+  #cam-label { color: rgba(255,255,255,0.8); font-size: 13px; letter-spacing: 0.05em; }
+
+  #guide {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -56%);
+    width: min(55vw, 240px); height: min(55vw, 240px);
+    border: 2px solid rgba(255,255,255,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 10;
+  }
+  #guide::before, #guide::after {
+    content: ''; position: absolute; background: rgba(255,255,255,0.3);
+  }
+  #guide::before { top:50%; left:-12px; right:-12px; height:1px; }
+  #guide::after  { left:50%; top:-12px; bottom:-12px; width:1px; }
+
+  #cam-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 20px 20px 28px;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    display: flex; justify-content: center; align-items: center; gap: 32px; z-index: 10;
+  }
+
+  #btn-capture {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: white; border: 4px solid rgba(255,255,255,0.45);
+    cursor: pointer; outline: none;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.18);
+    transition: transform 0.12s, box-shadow 0.12s; position: relative;
+  }
+  #btn-capture::after {
+    content:''; position:absolute; inset:7px; border-radius:50%;
+    background:white; border:2px solid #bbb;
+  }
+  #btn-capture:hover  { transform:scale(1.08); box-shadow:0 0 0 8px rgba(255,255,255,0.15); }
+  #btn-capture:active { transform:scale(0.91); }
+
+  #btn-flip {
+    width:46px; height:46px; border-radius:50%;
+    background:rgba(255,255,255,0.15); border:none; cursor:pointer;
+    color:white; font-size:20px;
+    display:flex; align-items:center; justify-content:center;
+    transition:background 0.15s; backdrop-filter:blur(4px);
+  }
+  #btn-flip:hover { background:rgba(255,255,255,0.28); }
+
+  #flash {
+    position:absolute; inset:0; background:white; opacity:0;
+    pointer-events:none; z-index:20;
+  }
+  #flash.snap { animation: flashAnim 0.3s ease-out forwards; }
+  @keyframes flashAnim { 0%{opacity:0.9} 100%{opacity:0} }
+
+  #thumb {
+    position:absolute; bottom:110px; right:16px;
+    width:72px; height:72px; border-radius:10px;
+    border:2px solid rgba(255,255,255,0.5);
+    object-fit:cover; display:none; z-index:15;
+    box-shadow:0 4px 14px rgba(0,0,0,0.5);
+  }
+  #badge {
+    position:absolute; bottom:110px; left:50%; transform:translateX(-50%);
+    background:rgba(40,160,80,0.9); color:white; font-size:12px;
+    padding:6px 14px; border-radius:20px; display:none; z-index:15;
+    white-space:nowrap; backdrop-filter:blur(4px);
+  }
+  #no-cam {
+    display:none; position:absolute; inset:0;
+    align-items:center; justify-content:center; flex-direction:column; gap:12px;
+    background:#111; color:#aaa; font-size:14px; text-align:center; padding:30px; z-index:50;
+  }
+  #no-cam.show { display:flex; }
+</style>
+</head>
+<body>
+
+<div id="cam-wrapper">
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="canvas"></canvas>
+  <div id="cam-top">
+    <div id="cam-dot"></div>
+    <span id="cam-label">Centra el frijol en el círculo y captura</span>
+  </div>
+  <div id="guide"></div>
+  <div id="cam-bottom">
+    <button id="btn-flip" title="Cambiar cámara">🔄</button>
+    <button id="btn-capture" title="Tomar foto"></button>
+    <div style="width:46px"></div>
+  </div>
+  <div id="flash"></div>
+  <img id="thumb" alt="preview" />
+  <div id="badge">✅ Foto enviada — procesando…</div>
+</div>
+
+<div id="no-cam">
+  <p style="font-size:32px">📷</p>
+  <p>No se pudo acceder a la cámara.</p>
+  <p style="font-size:12px;color:#666;margin-top:4px">
+    Verifica permisos del navegador.<br>
+    La app debe correr en HTTPS o localhost.
+  </p>
+</div>
+
+<script>
+(function () {
+  const video  = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const btnCap = document.getElementById('btn-capture');
+  const btnFl  = document.getElementById('btn-flip');
+  const flash  = document.getElementById('flash');
+  const thumb  = document.getElementById('thumb');
+  const badge  = document.getElementById('badge');
+  const noCam  = document.getElementById('no-cam');
+
+  let stream   = null;
+  let useFront = false;
+  let stReady  = false; // true después de que Streamlit envíe 'streamlit:render'
+
+  /* ── 1. Protocolo Streamlit ──────────────────────────── */
+
+  // Escuchar el evento render que Streamlit envía al iframe
+  window.addEventListener('message', function (e) {
+    if (!e.data || !e.data.type) return;
+    if (e.data.type === 'streamlit:render') {
+      stReady = true;
+    }
+  });
+
+  function stSend(type, payload) {
+    window.parent.postMessage(Object.assign({ type }, payload), '*');
+  }
+
+  // Anunciar que el componente está listo (OBLIGATORIO antes de setComponentValue)
+  function announceReady() {
+    stSend('streamlit:componentReady', { apiVersion: 1 });
+    stSend('streamlit:setFrameHeight', { height: window.innerHeight || 520 });
+  }
+
+  function sendPhoto(b64) {
+    // dataType 'json' → Python lo recibe como string directamente
+    stSend('streamlit:setComponentValue', { value: b64, dataType: 'json' });
+  }
+
+  /* ── 2. Cámara ───────────────────────────────────────── */
+
+  async function startCamera() {
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: useFront ? 'user' : 'environment',
+          width:  { ideal: 1920 },
+          height: { ideal: 1080 },
+        }
+      });
+      video.srcObject = stream;
+    } catch (err) {
+      document.getElementById('cam-wrapper').style.display = 'none';
+      noCam.classList.add('show');
+    }
+  }
+
+  /* ── 3. Captura ──────────────────────────────────────── */
+
+  btnCap.addEventListener('click', () => {
+    if (!stream) return;
+
+    // Flash
+    flash.classList.remove('snap');
+    void flash.offsetWidth;
+    flash.classList.add('snap');
+
+    // Frame → canvas → base64
+    const vw = video.videoWidth  || 1280;
+    const vh = video.videoHeight || 720;
+    canvas.width  = vw;
+    canvas.height = vh;
+    canvas.getContext('2d').drawImage(video, 0, 0, vw, vh);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    const b64     = dataUrl.split(',')[1];
+
+    // Miniatura de confirmación
+    thumb.src          = dataUrl;
+    thumb.style.display = 'block';
+    badge.style.display = 'block';
+    setTimeout(() => { badge.style.display = 'none'; }, 3000);
+
+    // Enviar a Python
+    sendPhoto(b64);
+  });
+
+  btnFl.addEventListener('click', () => {
+    useFront = !useFront;
+    startCamera();
+  });
+
+  /* ── 4. Altura dinámica ──────────────────────────────── */
+  window.addEventListener('resize', () => {
+    stSend('streamlit:setFrameHeight', { height: window.innerHeight });
+  });
+
+  /* ── 5. Init ─────────────────────────────────────────── */
+  // Anunciar ready lo antes posible y también después de que llegue render
+  announceReady();
+  window.addEventListener('message', function once(e) {
+    if (e.data && e.data.type === 'streamlit:render') {
+      announceReady(); // re-anunciar por si llegó antes
+      window.removeEventListener('message', once);
+    }
+  });
+
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    startCamera();
+  } else {
+    document.getElementById('cam-wrapper').style.display = 'none';
+    noCam.classList.add('show');
+  }
+
+  setTimeout(() => stSend('streamlit:setFrameHeight', { height: window.innerHeight || 520 }), 600);
+})();
+</script>
+</body>
+</html>
