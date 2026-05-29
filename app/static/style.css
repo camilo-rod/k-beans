@@ -9,11 +9,24 @@
   --light:     #FAFAFA;
   --shadow-sm: 0 4px 12px rgba(0,0,0,.06);
   --shadow-md: 0 12px 30px rgba(0,0,0,.12);
+  --card-bg:   white;
+  --card-border: rgba(0,0,0,.08);
+}
+
+/* Modo oscuro: sobreescribir variables */
+[data-theme="dark"] {
+  --cream:      #1e1e1e;
+  --light:      #1e1e1e;
+  --border:     rgba(255,255,255,.10);
+  --shadow-sm:  0 4px 12px rgba(0,0,0,.3);
+  --shadow-md:  0 12px 30px rgba(0,0,0,.5);
+  --card-bg:    #2a2a2a;
+  --card-border: rgba(255,255,255,.08);
 }
 
 /* FONDO */
 [data-testid="stAppViewContainer"],
-[data-testid="stMain"] { background-color: #F5F0E8 !important; }
+[data-testid="stMain"] { background-color: var(--cream) !important; }
 
 /* OCULTAR STREAMLIT */
 #MainMenu, footer, header[data-testid="stHeader"] { visibility: hidden !important; height: 0 !important; }
@@ -31,13 +44,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
+  background: var(--card-bg);
   border-radius: 28px;
   padding: 25px;
   height: 100%;
   min-height: 240px;
   box-shadow: 0 8px 25px rgba(0,0,0,.08);
-  border: 1px solid rgba(0,0,0,.05);
+  border: 1px solid var(--card-border);
 }
 .logo-container img { object-fit: contain; max-width: 100%; }
 
@@ -90,20 +103,20 @@
 
 /* TARJETAS */
 .kb-card, .bean-card {
-  background: white;
+  background: var(--card-bg);
   padding: 30px;
   border-radius: 25px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
   box-shadow: 0 10px 25px rgba(0,0,0,.06);
   margin-top: 20px;
 }
 
 /* MÉTRICAS */
 div[data-testid="stMetric"] {
-  background: white;
+  background: var(--card-bg);
   padding: 25px !important;
   border-radius: 24px !important;
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow-sm);
   transition: .3s;
 }
@@ -134,9 +147,9 @@ div[data-testid="stMetric"]:hover { transform: translateY(-4px); box-shadow: var
 
 /* TABS */
 button[data-baseweb="tab"] {
-  background: white !important;
+  background: var(--card-bg) !important;
   border-radius: 15px !important;
-  border: 1px solid var(--border) !important;
+  border: 1px solid var(--card-border) !important;
   margin-right: 10px;
   height: 55px;
   padding: 0 28px !important;
@@ -151,10 +164,10 @@ button[aria-selected="true"]     { background: var(--moss) !important; color: wh
 
 /* GRÁFICOS */
 .stPlotlyChart {
-  background: white;
+  background: var(--card-bg);
   padding: 20px;
   border-radius: 25px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow-sm);
 }
 
