@@ -60,73 +60,125 @@ def _mascara_hsv(img_blur):
 
 
 def extraer_features(imagen_bytes):
-    """Procesa la imagen y extrae las features morfológicas del frijol."""
     nparr = np.frombuffer(imagen_bytes, np.uint8)
     img   = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-    # Escala de grises y desenfoque para reducir ruido
-    gray    = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (9, 9), 0)
-
-    # Umbral de Otsu
-    _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
-    # Operaciones morfológicas para separar sombra del frijol
-    kernel_small = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-    kernel_big   = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
-
-    thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN,  kernel_big,   iterations=2)
-    thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel_small, iterations=1)
-    thresh = cv2.erode(thresh, kernel_small, iterations=2)
-
-    # Buscar contornos
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    if not contours:
+    if img is None:
         return None, None
 
-    # Filtrar contornos: descartar ruido pequeño y sombras grandes
+    # ── Paso 1: reducir a resolución manejable para detección ────────────
+    alto_orig, ancho_orig = img.shape[:2]
+    MAX_DIM = 1200
+    if max(alto_orig, ancho_orig) > MAX_DIM:
+        s   = MAX_DIM / max(alto_orig, ancho_orig)
+        img = cv2.resize(img, (int(ancho_orig * s), int(alto_orig * s)),
+                         interpolation=cv2.INTER_AREA)
+
     alto, ancho = img.shape[:2]
     area_total  = alto * ancho
 
-    candidatos = [
-        c for c in contours
-        if 1000 < cv2.contourArea(c) < area_total * 0.5
-    ]
+    def _detectar(imagen):
+        b = cv2.GaussianBlur(imagen, (9, 9), 0)
+        m = _mascara_hsv(b)
+        ks = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        kb = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+        m  = cv2.morphologyEx(m, cv2.MORPH_OPEN,  kb, iterations=2)
+        m  = cv2.morphologyEx(m, cv2.MORPH_CLOSE, ks, iterations=3)
+        cs, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        return cs
 
-    if not candidatos:
+    contours = _detectar(img)
+    if not contours:
         return None, None
 
-    # Elegir el contorno más compacto (más redondo = más frijol, menos sombra)
-    contour   = max(candidatos, key=_compacidad)
-    area      = cv2.contourArea(contour)
-    perimeter = cv2.arcLength(contour, True)
+    at = alto * ancho
+    cands = [c for c in contours
+             if cv2.contourArea(c) > at * 0.001 and cv2.contourArea(c) < at * 0.60]
+    if not cands:
+        cands = [max(contours, key=cv2.contourArea)]
 
-    # Elipse equivalente para ejes
-    if len(contour) >= 5:
-        ellipse    = cv2.fitEllipse(contour)
+    contour = max(cands, key=_compacidad)
+
+    # ── Paso 2: auto-crop si el frijol es pequeño en el frame ────────────
+    if cv2.contourArea(contour) / at < 0.15:
+        x, y, w, h = cv2.boundingRect(contour)
+        mg = int(max(w, h) * 0.35)
+        x1, y1 = max(0, x - mg), max(0, y - mg)
+        x2, y2 = min(ancho, x + w + mg), min(alto, y + h + mg)
+        crop = cv2.resize(img[y1:y2, x1:x2], (600, 600))
+        cs2  = _detectar(crop)
+        if cs2:
+            ac   = 600 * 600
+            cd2  = [c for c in cs2 if cv2.contourArea(c) > ac * 0.05 and cv2.contourArea(c) < ac * 0.90]
+            if cd2:
+                cc   = max(cd2, key=_compacidad)
+                sx, sy = (x2 - x1) / 600, (y2 - y1) / 600
+                cf   = cc.astype(np.float32)
+                cf[:, :, 0] = cf[:, :, 0] * sx + x1
+                cf[:, :, 1] = cf[:, :, 1] * sy + y1
+                contour = cf.astype(np.int32)
+
+    # ── Paso 3: recortar el frijol y escalar a resolución ESTÁNDAR ───────
+    # El dataset fue medido con imágenes donde el frijol ocupa ~300-500px de eje mayor.
+    # Normalizamos a eso para que las features sean resolución-independientes.
+    TARGET_MAJOR = 400.0  # px en el espacio normalizado
+
+    x, y, w, h = cv2.boundingRect(contour)
+    mg2  = int(max(w, h) * 0.25)
+    x1b  = max(0, x - mg2);  y1b = max(0, y - mg2)
+    x2b  = min(ancho, x + w + mg2); y2b = min(alto, y + h + mg2)
+    bean_crop = img[y1b:y2b, x1b:x2b]
+
+    # Escalar para que el lado mayor del bounding box mida TARGET_MAJOR px
+    scale_to_target = TARGET_MAJOR / max(w, h) if max(w, h) > 0 else 1.0
+    new_w = max(1, int(bean_crop.shape[1] * scale_to_target))
+    new_h = max(1, int(bean_crop.shape[0] * scale_to_target))
+    bean_norm = cv2.resize(bean_crop, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+
+    # Re-detectar contorno en imagen normalizada
+    cs3 = _detectar(bean_norm)
+    if cs3:
+        an3  = new_w * new_h
+        cd3  = [c for c in cs3 if cv2.contourArea(c) > an3 * 0.05 and cv2.contourArea(c) < an3 * 0.92]
+        if cd3:
+            contour_final = max(cd3, key=_compacidad)
+        else:
+            contour_final = max(cs3, key=cv2.contourArea)
+    else:
+        contour_final = contour  # fallback al contorno anterior
+
+    # ── Paso 4: medir en espacio normalizado ─────────────────────────────
+    area      = cv2.contourArea(contour_final)
+    perimeter = cv2.arcLength(contour_final, True)
+
+    if len(contour_final) >= 5:
+        ellipse    = cv2.fitEllipse(contour_final)
         major_axis = max(ellipse[1])
         minor_axis = min(ellipse[1])
     else:
-        x, y, w, h = cv2.boundingRect(contour)
-        major_axis = max(w, h)
-        minor_axis = min(w, h)
+        _, _, wf, hf = cv2.boundingRect(contour_final)
+        major_axis = float(max(wf, hf))
+        minor_axis = float(min(wf, hf))
 
-    compactness = (4 * np.pi * area) / (perimeter ** 2) if perimeter > 0 else 0.0
-    compactness = float(np.clip(compactness, 0.60, 0.95))
+    compactness = (4 * np.pi * area) / (perimeter ** 2) if perimeter > 0 else 0.75
 
     features = {
         "Area":            float(area),
         "Perimeter":       float(perimeter),
         "MajorAxisLength": float(major_axis),
         "MinorAxisLength": float(minor_axis),
-        "Compactness":     compactness,
+        "Compactness":     float(np.clip(compactness, 0.10, 1.0)),
     }
 
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    cv2.drawContours(img_rgb, [contour], -1, (74, 103, 65), 3)
-    return features, img_rgb
+    # Dibujar contorno en la imagen de trabajo (no normalizada) para mostrar al usuario
+    # Escalar contorno_final de vuelta a coordenadas de img
+    cf_disp = contour_final.astype(np.float32)
+    cf_disp[:, :, 0] = cf_disp[:, :, 0] / scale_to_target + x1b
+    cf_disp[:, :, 1] = cf_disp[:, :, 1] / scale_to_target + y1b
+    cf_disp = cf_disp.astype(np.int32)
 
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    cv2.drawContours(img_rgb, [cf_disp], -1, (74, 103, 65), 3)
+    return features, img_rgb
 
 
 
@@ -353,7 +405,6 @@ def render(kmeans, scaler, pca, X_pca):
                 _mostrar_resultado(kmeans, scaler, pca, X_pca,
                                    area, perimeter, major_axis, minor_axis, compactness)
         else:
-            # Botón principal
             if st.button("Predecir frijol", use_container_width=True, type="primary"):
                 _mostrar_resultado(
                     kmeans, scaler, pca, X_pca,

@@ -15,6 +15,7 @@ Devuelve:
 """
 
 from pathlib import Path
+import streamlit as st
 import streamlit.components.v1 as components
 
 # templates/ está un nivel arriba de UI/
@@ -31,4 +32,26 @@ def camera_widget(height: int = 520, key: str = "camera_widget") -> str | None:
     Renderiza la cámara a pantalla completa y devuelve el base64 JPEG
     de la foto capturada, o None si aún no se ha tomado ninguna.
     """
+    # Parchear todos los iframes del componente para que tengan allow="camera"
+    # Streamlit no agrega este atributo por defecto y Chrome lo requiere.
+    st.markdown("""
+    <script>
+    (function patchIframes() {
+        document.querySelectorAll('iframe').forEach(function(f) {
+            if (!f.allow || !f.allow.includes('camera')) {
+                f.allow = 'camera; microphone';
+            }
+        });
+    })();
+    // Repetir por si el iframe aún no existe al cargar
+    setTimeout(function patchIframes() {
+        document.querySelectorAll('iframe').forEach(function(f) {
+            if (!f.allow || !f.allow.includes('camera')) {
+                f.allow = 'camera; microphone';
+            }
+        });
+    }, 800);
+    </script>
+    """, unsafe_allow_html=True)
+
     return _camera_component(height=height, key=key, default=None)
