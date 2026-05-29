@@ -14,14 +14,27 @@
 }
 
 /* Modo oscuro: sobreescribir variables */
-[data-theme="dark"] {
-  --cream:      #1e1e1e;
-  --light:      #1e1e1e;
-  --border:     rgba(255,255,255,.10);
-  --shadow-sm:  0 4px 12px rgba(0,0,0,.3);
-  --shadow-md:  0 12px 30px rgba(0,0,0,.5);
-  --card-bg:    #2a2a2a;
-  --card-border: rgba(255,255,255,.08);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cream:      #1e1e1e;
+    --light:      #1e1e1e;
+    --border:     rgba(255,255,255,.10);
+    --shadow-sm:  0 4px 12px rgba(0,0,0,.3);
+    --shadow-md:  0 12px 30px rgba(0,0,0,.5);
+    --card-bg:    #2a2a2a;
+    --card-border: rgba(255,255,255,.08);
+  }
+
+  /* Fondo app */
+  [data-testid="stAppViewContainer"],
+  [data-testid="stMain"] { background-color: #1e1e1e !important; }
+
+  /* Métricas y tarjetas */
+  div[data-testid="stMetric"] { background: #2a2a2a !important; border-color: rgba(255,255,255,.08) !important; }
+
+  /* Tabs */
+  button[data-baseweb="tab"] { background: #2a2a2a !important; border-color: rgba(255,255,255,.08) !important; }
+  button[data-baseweb="tab"]:hover { background: #333 !important; }
 }
 
 /* FONDO */
