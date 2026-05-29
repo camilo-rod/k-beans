@@ -314,10 +314,7 @@ def render(kmeans, scaler, pca, X_pca):
     # ── PASO 1: Info ──────────────────────────
     st.markdown("### Analiza tu frijol")
 
-    st.info(
-        "**Para mejores resultados:** fondo blanco, buena iluminación, "
-        "sin sombras, un solo frijol centrado en el encuadre."
-    )
+    st.info("**Cómo tomar la foto:** Pon el frijol sobre una hoja blanca, asegúrate de que haya buena luz y coloca el frijol solo, sin otros objetos cerca.")
 
     with st.expander("¿Cómo se miden las features?"):
         st.markdown("""
