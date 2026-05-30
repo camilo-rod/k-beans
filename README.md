@@ -29,7 +29,7 @@ Este tipo de solución no es nueva; otros equipos e instituciones han abordado p
 
 Lo que diferencia a K-Beans es la integración completa: desde el preprocesamiento hasta una aplicación web desplegada y usable por alguien sin conocimientos de ML.
 
-## Qué suele faltar en proyectos como este
+## ¿Qué suele faltar en proyectos como este?
 Muchos proyectos académicos de clustering se quedan en el notebook. Lo que frecuentemente falta, y que intentamos abordar, incluye:
 
 - **Interpretabilidad de los clusters:** decir "cluster 2" no comunica nada útil. Añadir descripciones del perfil morfológico de cada grupo hace la salida accionable.
@@ -83,8 +83,6 @@ python -m streamlit run app/app.py
 1. Ingresa los valores morfológicos del frijol (Area, Perimeter, MajorAxisLength, MinorAxisLength, Compactness) dentro de los rangos indicados.
 2. Haz clic en **Predecir cluster**.
 3. La app mostrará el cluster asignado, una descripción del perfil del frijol y una visualización PCA con todos los clusters.
-
-## Estructura del proyecto
 
 ## Estructura del proyecto
 ```
