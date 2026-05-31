@@ -230,7 +230,7 @@ def _mostrar_resultado(kmeans, scaler, pca, X_pca,
     # ── Gráfica PCA ───────────────────────────
     st.markdown("---")
     st.markdown("### Distribución de clusters (PCA)")
-    st.caption(
+    st.markdown(
         "Esta gráfica muestra todos los frijoles del dataset proyectados en dos dimensiones "
         "mediante Análisis de Componentes Principales (PCA). Cada color representa un cluster "
         "diferente, y la estrella roja indica dónde se ubica tu frijol dentro de esa distribución."
