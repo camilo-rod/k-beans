@@ -240,16 +240,19 @@ def _mostrar_resultado(kmeans, scaler, pca, X_pca,
     pca_df = pd.DataFrame({
         "PCA1":    X_pca[:, 0],
         "PCA2":    X_pca[:, 1],
-        "Cluster": labels,
+        "Cluster": [CLUSTER_NAMES.get(l, str(l)) for l in labels],
     })
 
     # dpi=150 → nítido en pantallas de alta densidad (móviles Retina/AMOLED)
     # figsize pequeño → use_container_width lo estira al ancho disponible
     fig, ax = plt.subplots(figsize=(5, 3.5), dpi=150)
 
+    cluster_order = [CLUSTER_NAMES[i] for i in range(kmeans.n_clusters) if i in CLUSTER_NAMES]
+    palette_map   = {CLUSTER_NAMES[i]: PALETTE[i] for i in range(kmeans.n_clusters) if i in CLUSTER_NAMES}
+
     sns.scatterplot(
         data=pca_df, x="PCA1", y="PCA2", hue="Cluster",
-        palette=PALETTE[:kmeans.n_clusters], alpha=0.6,
+        hue_order=cluster_order, palette=palette_map, alpha=0.6,
         s=18, edgecolor="white", linewidth=0.2, ax=ax,
     )
 
